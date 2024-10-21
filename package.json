@@ -1,0 +1,31 @@
+{
+  "name": "functions-quickstart-spo",
+  "version": "1.0.0",
+  "author": {
+    "name": "Yvan Duhamel"
+  },
+  "description": "This Quickstart uses Azure Developer command-line (azd) tools to create functions for SharePoint Online",
+  "license": "MIT",
+  "main": "dist/src/functions/*.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean && npm run build",
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@pnp/azidjsclient": "^4.6.0",
+    "@pnp/core": "^4.6.0",
+    "@pnp/nodejs": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "azure-functions-core-tools": "^4.x",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3"
+  }
+}

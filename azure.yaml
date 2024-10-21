@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: func-spo-webhook
+metadata:
+  template: Yvand/functions-quickstart-typescript-azd@1.0.0
+services:
+  processor:
+    project: .
+    language: js
+    host: function

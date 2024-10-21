@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "resourceGroupName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "appServiceName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "appServiceIdentityType": {
+      "value": "SystemAssigned"
+    },
+    "keyVaultEnableSoftDelete": {
+      "value": false
+    },
+    "allowedIpAddresses": {
+      "value": [
+        "${ALLOWEDIPADDRESSES}"
+      ]
+    },
+    "appSettings": {
+      "value": {
+        "TenantPrefix": "${TenantPrefix}",
+        "SiteRelativePath": "${SiteRelativePath}"
+      }
+    }
+  }
+}
