@@ -6,7 +6,7 @@ param tenantId string
 @allowed(['Enabled', 'Disabled'])
 param publicNetworkAccess string = 'Disabled'
 param sku object = { family: 'A', name: 'standard' }
-param allowedIpAddresses array
+param allowedIpAddresses array = []
 param virtualNetworkSubnetId string
 param enableSoftDelete bool = true
 
@@ -29,7 +29,7 @@ resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
-      ipRules: ipRules
+      ipRules: empty(allowedIpAddresses) ? [] : ipRules
       // virtualNetworkRules: map([virtualNetworkSubnetId], subnetId => { id: subnetId })
       virtualNetworkRules: [
         {
