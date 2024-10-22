@@ -13,18 +13,18 @@ import { setLogLevel } from "@azure/logger";
 
 // setLogLevel("info");
 
-interface SharePointSite {
+export interface SharePointSiteInfo {
   tenantPrefix: string;
   siteRelativePath: string;
 };
 
-interface SharePointConnection extends SharePointSite {
+interface SharePointSiteConnection extends SharePointSiteInfo {
   spfi: SPFI;
 };
 
-const spfiCollection: SharePointConnection[] = [];
+const spfiCollection: SharePointSiteConnection[] = [];
 
-export function getSPFI(spSite?: SharePointSite): SPFI {
+export function getSPFI(spSite?: SharePointSiteInfo): SPFI {
   if (!spSite) {
     spSite = {
       tenantPrefix: CommonConfig.TenantPrefix as string,
@@ -32,7 +32,7 @@ export function getSPFI(spSite?: SharePointSite): SPFI {
     }
   }
 
-  let connectionCache: SharePointConnection | undefined;
+  let connectionCache: SharePointSiteConnection | undefined;
   connectionCache = spfiCollection.find(
     (item) =>
       item.siteRelativePath === spSite.siteRelativePath &&
@@ -51,7 +51,7 @@ export function getSPFI(spSite?: SharePointSite): SPFI {
  * @param spSite SharePoint site details
  * @returns SharePoint connection
  */
-function initSPFI(spSite: SharePointSite): SharePointConnection {
+function initSPFI(spSite: SharePointSiteInfo): SharePointSiteConnection {
   const credential = getAzureCredential();
   const baseUrl: string = `https://${spSite.tenantPrefix}.sharepoint.com${spSite.siteRelativePath}`;
   const scopes: string[] = getScopes(spSite.tenantPrefix);
@@ -59,7 +59,7 @@ function initSPFI(spSite: SharePointSite): SharePointConnection {
     CustomConnection(),
     AzureIdentity(credential, scopes, undefined)
   );
-  let siteConnection = spSite as SharePointConnection;
+  let siteConnection = spSite as SharePointSiteConnection;
   siteConnection.spfi = spConnection;
   return siteConnection;
 }

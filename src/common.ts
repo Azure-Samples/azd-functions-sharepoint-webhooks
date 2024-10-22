@@ -1,3 +1,5 @@
+import { SharePointSiteInfo } from "./spAuthentication";
+
 export const CommonConfig = {
     UserAgent: process.env.UserAgent || "functions-quickstart-spo",
     TenantPrefix: process.env.TenantPrefix || "",
@@ -21,4 +23,15 @@ export interface ISubscriptionResponse {
     resource: string;
     resourceData: string;
     scenarios: string;
+}
+
+export function getSharePointSiteInfo(tenantPrefix?: string, siteRelativePath?: string): SharePointSiteInfo | undefined {
+    let sharePointSite = undefined;
+    if (siteRelativePath || tenantPrefix) {
+        sharePointSite = {
+            tenantPrefix: tenantPrefix ? tenantPrefix : CommonConfig.TenantPrefix,
+            siteRelativePath: siteRelativePath ? siteRelativePath : CommonConfig.SiteRelativePath,
+        };
+    }
+    return sharePointSite;
 }

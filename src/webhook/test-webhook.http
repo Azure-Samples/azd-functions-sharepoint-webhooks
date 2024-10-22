@@ -22,3 +22,5 @@ POST {{ $dotenv %baseUrl }}/api/webhook/register?{{ $dotenv %authCode }}listTitl
 
 ###
 
+GET {{ $dotenv %baseUrl }}/api/webhook/listRegistered?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }}&siteRelativePath=/sites/IDoNotExist HTTP/1.1
+Accept: application/json

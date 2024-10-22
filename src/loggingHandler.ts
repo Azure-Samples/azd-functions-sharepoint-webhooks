@@ -1,6 +1,6 @@
 import { InvocationContext } from "@azure/functions";
 import { Logger, FunctionListener, ILogEntry, ILogListener, LogLevel } from "@pnp/logging";
-import { CommonConfig } from "./common.js";
+import { CommonConfig, safeWait } from "./common.js";
 import { HttpRequestError } from "@pnp/queryable";
 import { hOP } from "@pnp/core";
 
@@ -38,7 +38,7 @@ function logMessage(entry: ILogEntry): void {
                 logcontext.log(entry.message);
                 break;
         }
-    }else if (CommonConfig.IsLocalEnvironment) {
+    } else if (CommonConfig.IsLocalEnvironment) {
         console.log(entry.message);
     }
 }
@@ -50,18 +50,21 @@ function logMessage(entry: ILogEntry): void {
  * @returns formatted error message
  */
 export async function handleError(e: Error | HttpRequestError, logcontext: InvocationContext, currentOperationDetails?: string): Promise<string> {
-    let message = currentOperationDetails || "";
+    let message = currentOperationDetails ? `${currentOperationDetails}: ` : "";
     let level: LogLevel = LogLevel.Error;
-    let jsonResponse: any;
 
     if (hOP(e, "isHttpRequestError")) {
-        jsonResponse = await (<HttpRequestError>e).response.json();
-        message += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+        let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>e).response.json());
+        if (jsonResponse) {
+            message += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+        } else {
+            message += e.message;
+        }
         if ((<HttpRequestError>e).status === 404) {
             level = LogLevel.Warning;
         }
     } else {
-        message += e;
+        message += e.message;
     }
 
     Logger.log({
