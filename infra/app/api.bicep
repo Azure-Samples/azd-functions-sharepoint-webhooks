@@ -6,7 +6,7 @@ param appServicePlanId string
 param appSettings object = {}
 param runtimeName string
 param runtimeVersion string
-param serviceName string = 'processor'
+param serviceName string = 'api'
 param storageAccountName string
 param virtualNetworkSubnetId string = ''
 param instanceMemoryMB int = 2048
@@ -15,6 +15,8 @@ param identityId string = ''
 param identityClientId string = ''
 @allowed(['SystemAssigned', 'UserAssigned'])
 param identityType string
+@allowed(['Flex', 'Premium'])
+param appFunctionType string = 'Flex'
 
 var managedIdentityAuthSettings = identityType == 'UserAssigned'
   ? {
@@ -25,7 +27,7 @@ var managedIdentityAuthSettings = identityType == 'UserAssigned'
       APPLICATIONINSIGHTS_AUTHENTICATION_STRING: 'Authorization=AAD'
     }
 
-module processor '../core/host/functions-flexconsumption.bicep' = {
+module api '../core/host/functions-node.bicep' = {
   name: '${serviceName}-functions-module'
   params: {
     name: name
@@ -42,8 +44,9 @@ module processor '../core/host/functions-flexconsumption.bicep' = {
     virtualNetworkSubnetId: virtualNetworkSubnetId
     instanceMemoryMB: instanceMemoryMB
     maximumInstanceCount: maximumInstanceCount
+    appFunctionType: appFunctionType
   }
 }
 
-output SERVICE_PROCESSOR_NAME string = processor.outputs.name
-output SERVICE_API_IDENTITY_PRINCIPAL_ID string = processor.outputs.identityPrincipalId
+output SERVICE_API_NAME string = api.outputs.name
+output SERVICE_API_IDENTITY_PRINCIPAL_ID string = api.outputs.identityPrincipalId
