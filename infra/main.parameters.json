@@ -17,9 +17,6 @@
     "apiServiceIdentityType": {
       "value": "SystemAssigned"
     },
-    "keyVaultEnableSoftDelete": {
-      "value": false
-    },
     "allowedIpAddresses": {
       "value": [
         "${ALLOWEDIPADDRESSES}"
@@ -27,6 +24,12 @@
     },
     "appFunctionType": {
       "value": "Flex"
+    },
+    "addKkeyVault": {
+      "value": true
+    },
+    "keyVaultEnableSoftDelete": {
+      "value": false
     },
     "appSettings": {
       "value": {

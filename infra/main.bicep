@@ -28,7 +28,7 @@ param environmentName string
 param location string
 
 @description('List of the public IP addresses allowed to connect to the storage account and the key vault.')
-param allowedIpAddresses array
+param allowedIpAddresses array = []
 
 @description('List of the environment variables to create in the Azure functions service.')
 param appSettings object
@@ -48,6 +48,7 @@ param vNetName string = ''
 param vaultName string = ''
 param disableLocalAuth bool = true
 param publicNetworkAccess string = 'Enabled'
+param addKkeyVault bool = true
 param keyVaultEnableSoftDelete bool = true
 
 var abbrs = loadJsonContent('./abbreviations.json')
@@ -208,7 +209,7 @@ module appInsightsRoleAssignmentApi './core/monitor/appinsights-access.bicep' = 
 }
 
 // Keyvault
-module vault './core/vault/vault-resource.bicep' = {
+module vault './core/vault/vault-resource.bicep' = if (addKkeyVault == true) {
   name: 'vault'
   scope: rg
   params: {
@@ -230,7 +231,7 @@ resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefiniti
 }
 
 // Allow access from api to skey vault using a managed identity
-module vaultRoleAssignmentApi './core/vault/vault-access.bicep' = {
+module vaultRoleAssignmentApi './core/vault/vault-access.bicep' = if (addKkeyVault == true) {
   name: 'vaultRoleAssignmentApi'
   scope: rg
   params: {
@@ -246,5 +247,4 @@ module vaultRoleAssignmentApi './core/vault/vault-access.bicep' = {
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
 output AZURE_LOCATION string = location
 output AZURE_TENANT_ID string = tenant().tenantId
-output SERVICE_PROCESSOR_NAME string = api.outputs.SERVICE_API_NAME
 output AZURE_FUNCTION_NAME string = api.outputs.SERVICE_API_NAME
