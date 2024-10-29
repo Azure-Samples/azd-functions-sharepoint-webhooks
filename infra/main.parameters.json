@@ -25,9 +25,6 @@
     "appFunctionType": {
       "value": "Flex"
     },
-    "addKkeyVault": {
-      "value": true
-    },
     "keyVaultEnableSoftDelete": {
       "value": false
     },
