@@ -118,7 +118,7 @@ var storageRoleDefinitionId = 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' //Storage B
 
 // Allow access from api to storage account using a managed identity
 module storageRoleAssignmentApi 'app/storage-Access.bicep' = {
-  name: 'storageRoleAssignmentPRocessor'
+  name: 'storageRoleAssignmentApi'
   scope: rg
   params: {
     storageAccountName: storage.outputs.name
