@@ -17,13 +17,13 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0",
+    "@azure/functions": "^4.6.0",
     "@pnp/azidjsclient": "^4.6.0",
     "@pnp/core": "^4.6.0",
     "@pnp/nodejs": "^4.6.0"
   },
   "devDependencies": {
-    "@types/node": "^22.7.5",
+    "@types/node": "^22.8.4",
     "azure-functions-core-tools": "^4.x",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3"
