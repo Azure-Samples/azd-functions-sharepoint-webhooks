@@ -96,10 +96,11 @@ function getAzureCredential(): ValidCredential {
 }
 
 /**
- * Authenticate with managed identity
+ * Authenticate if possible with a managed identity, either the system-assigned or a user-assigned managed identity, or to a fallback method (such as az cli)
  */
 function withDefaultAzureCredential(): ValidCredential {
   const credential = new DefaultAzureCredential(
+    // if managedIdentityClientId is undefined, it will use the system-assigned managed identity
     { managedIdentityClientId: CommonConfig.UserAssignedManagedIdentityClientId }
     // {
     //   loggingOptions: {
