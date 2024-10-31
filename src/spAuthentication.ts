@@ -100,7 +100,7 @@ function getAzureCredential(): ValidCredential {
  */
 function withDefaultAzureCredential(): ValidCredential {
   const credential = new DefaultAzureCredential(
-    { managedIdentityClientId: undefined }
+    { managedIdentityClientId: CommonConfig.UserAssignedManagedIdentityClientId }
     // {
     //   loggingOptions: {
     //     allowLoggingAccountIdentifiers: true,
