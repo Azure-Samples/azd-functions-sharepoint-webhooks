@@ -25,65 +25,57 @@ export async function getWebTitle(request: HttpRequest, context: InvocationConte
 };
 
 export async function setListItem(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    const sp: SPFI = getSPFI();
-    let body: string = "";
-    let currentMessage: string = "";
     try {
         const listTitle = request.query.get('listTitle');
         const itemTitle = request.query.get('itemTitle');
         const itemValue: string = request.query.get('itemValue') || new Date().toISOString();
-
         if (!listTitle) { return { status: 400, body: 'Value listTitle is required' }; }
-        if (!itemTitle) { return { status: 400, body: 'Value itemTitle is required' }; }
 
+        const sp: SPFI = getSPFI();
         const list = sp.web.lists.getByTitle(listTitle);
         if (!list) {
-            currentMessage = `List '${listTitle}' was not found`;
-            Logger.log({ data: context, message: currentMessage, level: LogLevel.Error });
-            return { status: 400, body: currentMessage };
+            const errMessage = `List '${listTitle}' was not found`;
+            Logger.log({ data: context, message: errMessage, level: LogLevel.Error });
+            return { status: 400, body: errMessage };
         }
 
         let items: any[], item: any, error: any;
         [items, error] = await safeWait(list.items.select("Id", "Title").filter(`Title eq '${itemTitle}'`)());
         if (error) {
-            currentMessage = await handleError(error, context, `Unexpected error whhile connecting to SPO: `);
-            return { status: 400, body: currentMessage };
+            const errMessage = await handleError(error, context, `Unexpected error whhile getting items from list "${itemTitle}": `);
+            return { status: 400, body: errMessage };
         }
 
         if (items.length > 0) {
             item = items[0]
         }
 
+        let jsonBody;
         if (item) {
-            currentMessage = `Updating item '${item.Title}' in list '${listTitle}' with value '${itemValue}'...`;
-            context.log(currentMessage);
-            body += `\n${currentMessage}`;
+            Logger.log({ data: context, message: `Updating item '${item.Title}' in list '${listTitle}' with value '${itemValue}'...`, level: LogLevel.Info });
             await sp.web.lists.getByTitle(listTitle).items.getById(item.Id).update({
                 Description: itemValue,
             });
             // https://pnp.github.io/pnpjs/transition-guide/#addupdate-methods-no-longer-returning-data-and-a-queryable-instance
             // "update events return 204, which would translate into a return type of void. In that case you will have to adjust your code to make a second call "
             let updatedItem = await sp.web.lists.getByTitle(listTitle).items.getById(item.Id)();
-            currentMessage = `Updated item: '${JSON.stringify(updatedItem)}'.`;
-            context.log(currentMessage);
-            body += `\n${currentMessage}`;
+            Logger.log({ data: context, message: `Updated item: '${JSON.stringify(updatedItem)}'.`, level: LogLevel.Info });
+            jsonBody = updatedItem;
+            jsonBody.Operation = "Update";
         } else {
-            currentMessage = `Adding item '${itemTitle}' in list '${listTitle}' with value '${itemValue}'...`;
-            context.log(currentMessage);
-            body += `\n${currentMessage}`;
-
+            Logger.log({ data: context, message: `Adding item '${itemTitle}' in list '${listTitle}' with value '${itemValue}'...`, level: LogLevel.Info });
             const addedItem = await sp.web.lists.getByTitle(listTitle).items.add({
                 Title: itemTitle,
                 Description: itemValue
             });
-            currentMessage = `Added item: '${JSON.stringify(addedItem)}'.`;
-            context.log(currentMessage);
-            body += `\n${currentMessage}`;
+            Logger.log({ data: context, message: `Added item: '${JSON.stringify(addedItem)}'.`, level: LogLevel.Info });
+            jsonBody = addedItem;
+            jsonBody.Operation = "Add";
         }
+        return { jsonBody: jsonBody };
     }
-    catch (ex) {
-        context.error(ex);
-        body += ex as string;
+    catch (error: unknown) {
+        const errMessage = await handleError(error, context, `Unexpected error whhile running function: `);
+        return { status: 400, body: errMessage };
     }
-    return { body: body };
 };
