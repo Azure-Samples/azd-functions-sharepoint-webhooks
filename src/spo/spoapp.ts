@@ -1,20 +1,23 @@
 import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { SPFI } from "@pnp/sp";
 import "@pnp/sp/items/index.js";
 import "@pnp/sp/lists/index.js";
 import "@pnp/sp/webs/index.js";
-import { safeWait } from "../common.js";
+import { getSharePointSiteInfo, safeWait } from "../common.js";
 import { getSPFI } from "../spAuthentication.js";
 import { Logger, LogLevel } from "@pnp/logging";
 import { handleError } from "../loggingHandler.js";
 
 export async function getWebTitle(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-    const sp: SPFI = getSPFI();
-    let message: string, error: any, webData: any;
+    const siteRelativePath = request.query.get('siteRelativePath') || undefined;
+    const tenantPrefix = request.query.get('tenantPrefix') || undefined;
+
+    const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
+    const sp = getSPFI(sharePointSite);
+    let error: any, webData: any;
     [webData, error] = await safeWait(sp.web());
     if (error) {
-        message = await handleError(error, context, `Could not get the SharePoint web details: `);
-        return { status: 400, body: message };
+        const errMessage = await handleError(error, context, `Could not get the SharePoint web details: `);
+        return { status: 400, body: errMessage };
     }
 
     const jsonBody = { title: webData.Title };
@@ -26,12 +29,15 @@ export async function getWebTitle(request: HttpRequest, context: InvocationConte
 
 export async function setListItem(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
+        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
+        const tenantPrefix = request.query.get('tenantPrefix') || undefined;
         const listTitle = request.query.get('listTitle');
         const itemTitle = request.query.get('itemTitle');
         const itemValue: string = request.query.get('itemValue') || new Date().toISOString();
         if (!listTitle) { return { status: 400, body: 'Value listTitle is required' }; }
 
-        const sp: SPFI = getSPFI();
+        const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
+        const sp = getSPFI(sharePointSite);
         const list = sp.web.lists.getByTitle(listTitle);
         if (!list) {
             const errMessage = `List '${listTitle}' was not found`;
