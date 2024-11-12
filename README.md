@@ -1,6 +1,6 @@
 ---
 name: Azure Functions for SharePoint Online
-description: This repository is a quickstart that uses the Azure Developer CLI (azd) to deploy Azure Functions (Flex Consumption), which can list, register and process SharePoint Online webhooks on your own tenant. It uses managed identity and a virtual network to make sure deployment is secure by default.
+description: This quickstart uses azd CLI to deploy Azure Functions which can connect to your own SharePoint Online tenant.
 page_type: sample
 languages:
 - azdeveloper
@@ -14,11 +14,9 @@ products:
 urlFragment: functions-quickstart-spo-azd
 ---
 
-# functions-quickstart-spo-azd
+# Secured Azure Functions for SharePoint Online
 
-This Quickstart uses Azure Developer command-line (azd) tools to create secure Azure functions for SharePoint Online
-
-
+This quickstart uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process SharePoint Online webhooks on your own tenant. It uses a managed identity and a virtual network to make sure the deployment is secure by default.
 
 ## Prerequisites
 
