@@ -1,0 +1,8 @@
+# @name webhookList
+GET {{ $dotenv %baseUrl }}/api/sharepoint/getwebtitle?{{ $dotenv %authCode }} HTTP/1.1
+Accept: application/json
+
+###
+
+POST {{ $dotenv %baseUrl }}/api/sharepoint/setListItem?{{ $dotenv %authCode }}&listTitle=list1&itemTitle=item1 HTTP/1.1
+Accept: application/json

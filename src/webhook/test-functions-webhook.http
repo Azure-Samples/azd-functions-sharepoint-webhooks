@@ -1,0 +1,26 @@
+# @name webhookList
+GET {{ $dotenv %baseUrl }}/api/webhook/listRegistered?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }} HTTP/1.1
+Accept: application/json
+
+###
+
+# @name webhookShow
+GET {{ $dotenv %baseUrl }}/api/webhook/showRegistered?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }}&notificationUrl={{ $dotenv %notificationUrl }} HTTP/1.1
+Accept: application/json
+
+###
+
+#@webhookId = {{ webhookShow.response.body.$.id }}
+@webhookId = 5e9a0bcf-707a-4b84-91f0-a7b2f2674a2f
+
+# @name webhookRemove
+POST {{ $dotenv %baseUrl }}/api/webhook/removeRegistered?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }}&webhookId={{webhookId}} HTTP/1.1
+
+###
+
+POST {{ $dotenv %baseUrl }}/api/webhook/register?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }}&notificationUrl={{ $dotenv %notificationUrl }} HTTP/1.1
+
+###
+
+GET {{ $dotenv %baseUrl }}/api/webhook/listRegistered?{{ $dotenv %authCode }}listTitle={{ $dotenv %listTitle }}&siteRelativePath=/sites/IDoNotExist HTTP/1.1
+Accept: application/json
