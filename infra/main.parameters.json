@@ -28,6 +28,9 @@
     "keyVaultEnableSoftDelete": {
       "value": false
     },
+    "addKkeyVault": {
+      "value": false
+    },
     "appSettings": {
       "value": {
         "TenantPrefix": "${TenantPrefix}",

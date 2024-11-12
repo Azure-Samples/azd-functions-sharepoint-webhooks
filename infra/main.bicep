@@ -48,7 +48,7 @@ param vNetName string = ''
 param vaultName string = ''
 param disableLocalAuth bool = true
 param publicNetworkAccess string = 'Enabled'
-var addKkeyVault = true // Not exposed as param because if false, it somehow causes error ResourceGroupNotFound during azd provision
+param addKkeyVault bool = false
 param keyVaultEnableSoftDelete bool = true
 
 var abbrs = loadJsonContent('./abbreviations.json')
