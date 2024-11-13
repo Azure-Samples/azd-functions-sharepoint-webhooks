@@ -66,7 +66,7 @@ Add a file named `local.settings.json` in the root of your project with the foll
 
 # Grant the functions access to SharePoint Online
 
-The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions service runs on the local environment, or in Azure.  
+The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions run on the local environment, or in Azure.  
 If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility), before continuing.
 
 ## Grant permission to SharePoint when the functions run on the local environment
@@ -90,10 +90,10 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 ```
 
 > [!WARNING]  
-> The service principal for `Azure CLI` may not exist in your tenant. If so, [this issue](https://github.com/Azure/azure-cli/issues/28628) will help you to add it.
+> The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
 
-> [!NOTE]  
-> Permission `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API, and `AllSites.Manage` is the minimum permission required to register a webhook.
+> [!IMPORTANT]  
+> `AllSites.Manage` is the minimum permission required to register a webhook.. `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
 ## Grant permission to SharePoint when the functions run in Azure
 
@@ -101,5 +101,25 @@ The functions service will use a managed identity to authenticate to SharePoint.
 This tutorial will assume that the system-assigned managed identity is used.
 
 ### Grant SharePoint API permission Sites.Selected to the service principal
+
+TODO
+
+<details>
+  <summary>Using PowerShell</summary>
+  ```powershell
+  # TODO
+  ```
+</details>
+   
+<details>
+  <summary>Using az cli in Bash</summary>
+  ```bash
+  managedIdentityObjectId="0efdba91-0b79-461a-af50-377740abf811" # 'Object (principal) ID' of the managed identity
+  resourceServicePrincipalId=$(az ad sp list --query '[].[id]' --filter "displayName eq 'Office 365 SharePoint Online'" -o tsv)
+  resourceServicePrincipalAppRoleId="$(az ad sp show --id $resourceServicePrincipalId --query "appRoles[?starts_with(value, 'Sites.Selected')].[id]" -o tsv)"
+    
+  az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/${managedIdentityObjectId}/appRoleAssignments" --headers 'Content-Type=application/json' --body "{ 'principalId': '${managedIdentityObjectId}', 'resourceId': '${resourceServicePrincipalId}', 'appRoleId': '${resourceServicePrincipalAppRoleId}' }"
+  ```
+</details>
 
 ### Grant effective permission on a SharePoint site to the service principal
