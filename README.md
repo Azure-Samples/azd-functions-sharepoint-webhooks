@@ -102,9 +102,9 @@ This tutorial will assume that the system-assigned managed identity is used.
 
 ### Grant SharePoint API permission Sites.Selected to the service principal
 
-Navigate to the [functions apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your function > Go to Identity and note the `Object (principal) ID` of the system-assigned managed identity.  
+Navigate to the [function apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your app > Identity. Note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
-Then, you need to use a script to grant it the app-only permission `Sites.Selected` to SharePoint API:
+Then, use one of the scripts below to grant it the app-only permission `Sites.Selected` on the SharePoint API:
 
 <details>
   <summary>Using PowerShell</summary>
