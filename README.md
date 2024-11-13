@@ -66,13 +66,13 @@ Add a file named `local.settings.json` in the root of your project with the foll
 
 # Grant the functions access to SharePoint Online
 
-This quickstart uses `DefaultAzureCredential`, so the identity the functions service uses to authenticate to SharePoint depends if it runs on the local environment, or in Azure.  
-I strongly recommend to read [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility) to understand the concept, if this is a new topic.
+The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions service runs on the local environment, or in Azure.  
+If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility), before continuing.
 
 ## Grant permission to SharePoint when the functions run on the local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
-The PowerShell script below grants the `Azure CLI`'s service principal the SharePoint delegated permission `AllSites.Manage`, which is the minimum required to register a webhook:
+The PowerShell script below grants the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
@@ -92,9 +92,8 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > [!WARNING]  
 > The service principal for `Azure CLI` may not exist in your tenant. If so, [this issue](https://github.com/Azure/azure-cli/issues/28628) will help you to add it.
 
-### Grant a delegated SharePoint API permission to the service principal
-
-Since `Sites.Selected` permission does not exist in this context, we will grant the delegated permission `AllSites.FullControl` to the `Azure CLI` service principal.
+> [!NOTE]  
+> Permission `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API, and `AllSites.Manage` is the minimum permission required to register a webhook.
 
 ## Grant permission to SharePoint when the functions run in Azure
 
