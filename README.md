@@ -1,4 +1,4 @@
----
+--
 name: Azure Functions for SharePoint Online
 description: This quickstart uses azd CLI to deploy Azure Functions which can connect to your own SharePoint Online tenant.
 page_type: sample
