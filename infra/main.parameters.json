@@ -11,7 +11,7 @@
     "resourceGroupName": {
       "value": "${AZURE_ENV_NAME}"
     },
-    "apiServiceName": {
+    "xapiServiceName": {
       "value": "${AZURE_ENV_NAME}"
     },
     "apiServiceIdentityType": {

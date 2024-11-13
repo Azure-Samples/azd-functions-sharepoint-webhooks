@@ -77,8 +77,8 @@ The PowerShell script below grants the SharePoint delegated permission `AllSites
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
 $scopeName = "AllSites.Manage"
-$requestorAppPrincipalObj = Get-MgServicePrincipal -Filter "displayname eq 'Microsoft Azure CLI'"
-$resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayname eq 'Office 365 SharePoint Online'"
+$requestorAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Microsoft Azure CLI'"
+$resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Office 365 SharePoint Online'"
 
 $params = @{
 	clientId = $requestorAppPrincipalObj.Id
@@ -97,19 +97,21 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 
 ## Grant permission to SharePoint when the functions run in Azure
 
-The functions service will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the functions service, or use your own user-assigned managed identity, that you create and assign to the functions service.  
+`DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the functions service, or a user-assigned managed identity.  
 This tutorial will assume that the system-assigned managed identity is used.
 
 ### Grant SharePoint API permission Sites.Selected to the service principal
 
-TODO
+Navigate to the [functions apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your function > Go to Identity and note the `Object (principal) ID` of the system-assigned managed identity.  
+In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
+Then, you need to use a script to grant it the app-only permission `Sites.Selected` to SharePoint API:
 
 <details>
   <summary>Using PowerShell</summary>
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "AppRoleAssignment.ReadWrite.All"
-$managedIdentityObjectId = "6cb4df2c-95c6-4f5a-9fdf-b16a15670382" # 'Object (principal) ID' of the managed identity
+$managedIdentityObjectId = "d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
 $scopeName = "Sites.Selected"
 $resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Office 365 SharePoint Online'" # SPO
 $targetAppPrincipalAppRole = $resourceAppPrincipalObj.AppRoles | ? Value -eq $scopeName
@@ -128,7 +130,7 @@ New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $managedIdentityObje
   <summary>Using az cli in Bash</summary>
 
 ```bash
-managedIdentityObjectId="0efdba91-0b79-461a-af50-377740abf811" # 'Object (principal) ID' of the managed identity
+managedIdentityObjectId="d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
 resourceServicePrincipalId=$(az ad sp list --query '[].[id]' --filter "displayName eq 'Office 365 SharePoint Online'" -o tsv)
 resourceServicePrincipalAppRoleId="$(az ad sp show --id $resourceServicePrincipalId --query "appRoles[?starts_with(value, 'Sites.Selected')].[id]" -o tsv)"
 
