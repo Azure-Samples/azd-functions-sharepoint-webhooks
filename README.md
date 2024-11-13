@@ -37,7 +37,7 @@ You can initialize a project from this `azd` template in one of these ways:
     azd init --template Yvand/functions-quickstart-spo-azd
     ```
 
-    Supply an environment name, such as `flexquickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
+    Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
 
 + Clone the GitHub template repository locally using the `git clone` command:
 
@@ -72,7 +72,7 @@ If you never heard about `DefaultAzureCredential`, you should familirize yoursel
 ## Grant the functions access to SharePoint when they run on the local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
-The PowerShell script below grants the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
+Use the PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
