@@ -93,7 +93,7 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
 
 > [!IMPORTANT]  
-> `AllSites.Manage` is the minimum permission required to register a webhook.. `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
+> `AllSites.Manage` is the minimum permission required to register a webhook. `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
 ## Grant permission to SharePoint when the functions run in Azure
 
@@ -107,10 +107,21 @@ TODO
 <details>
   <summary>Using PowerShell</summary>
 
-  ```powershell
-  # TODO
-  ```
-  
+```powershell
+Connect-MgGraph -Scope "Application.Read.All", "AppRoleAssignment.ReadWrite.All"
+$managedIdentityObjectId = "6cb4df2c-95c6-4f5a-9fdf-b16a15670382" # 'Object (principal) ID' of the managed identity
+$scopeName = "Sites.Selected"
+$resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Office 365 SharePoint Online'" # SPO
+$targetAppPrincipalAppRole = $resourceAppPrincipalObj.AppRoles | ? Value -eq $scopeName
+
+$appRoleAssignment = @{
+    "principalId" = $managedIdentityObjectId
+    "resourceId"  = $resourceAppPrincipalObj.Id
+    "appRoleId"   = $targetAppPrincipalAppRole.Id
+}
+New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $managedIdentityObjectId -BodyParameter $appRoleAssignment | Format-List
+```
+
 </details>
    
 <details>
