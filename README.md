@@ -8,9 +8,8 @@ languages:
 - nodejs
 - typescript
 products:
-- azure
 - azure-functions
-- entra-id
+- sharepoint-online
 urlFragment: functions-quickstart-spo-azd
 ---
 
@@ -64,3 +63,44 @@ Add a file named `local.settings.json` in the root of your project with the foll
     }
 }
 ```
+
+# Grant the functions access to SharePoint Online
+
+This quickstart uses `DefaultAzureCredential`, so the identity the functions service uses to authenticate to SharePoint depends if it runs on the local environment, or in Azure.  
+I strongly recommend to read [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility) to understand the concept, if this is a new topic.
+
+## Grant permission to SharePoint when the functions run on the local environment
+
+`DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
+The PowerShell script below grants the `Azure CLI`'s service principal the SharePoint delegated permission `AllSites.Manage`, which is the minimum required to register a webhook:
+
+```powershell
+Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
+$scopeName = "AllSites.Manage"
+$requestorAppPrincipalObj = Get-MgServicePrincipal -Filter "displayname eq 'Microsoft Azure CLI'"
+$resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayname eq 'Office 365 SharePoint Online'"
+
+$params = @{
+	clientId = $requestorAppPrincipalObj.Id
+	consentType = "AllPrincipals"
+	resourceId = $resourceAppPrincipalObj.Id
+	scope = $scopeName
+}
+New-MgOauth2PermissionGrant -BodyParameter $params
+```
+
+> [!WARNING]  
+> The service principal for `Azure CLI` may not exist in your tenant. If so, [this issue](https://github.com/Azure/azure-cli/issues/28628) will help you to add it.
+
+### Grant a delegated SharePoint API permission to the service principal
+
+Since `Sites.Selected` permission does not exist in this context, we will grant the delegated permission `AllSites.FullControl` to the `Azure CLI` service principal.
+
+## Grant permission to SharePoint when the functions run in Azure
+
+The functions service will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the functions service, or use your own user-assigned managed identity, that you create and assign to the functions service.  
+This tutorial will assume that the system-assigned managed identity is used.
+
+### Grant SharePoint API permission Sites.Selected to the service principal
+
+### Grant effective permission on a SharePoint site to the service principal
