@@ -140,3 +140,20 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 </details>
 
 ### Grant effective permission on a SharePoint site to the service principal
+
+Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
+In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
+
+> [!WARNING]  
+> In this step, we will use the `Application ID` of the managed identity, while in the previous step we used the `Object ID`, be mindful about the risk of confusion.
+
+Then, use one of the scripts below to grant it the app-only permission `manage` to a specific SharePoint site:
+
+```bash
+targetapp="3150363e-afbe-421f-9785-9d5404c5ae34"
+siteUrl="https://YOUR_SHAREPOINT_TENANT_PREFIX.sharepoint.com/sites/YOUR_SHAREPOINT_SITE_NAME"
+m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl $siteUrl
+```
+
+> [!IMPORTANT]  
+> `manage` is the minimum permission required to register a webhook.
