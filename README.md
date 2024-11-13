@@ -150,7 +150,9 @@ In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.
 Then, use one of the scripts below to grant it the app-only permission `manage` to a specific SharePoint site:
 
 <details>
-  <summary>Using [PnP PowerShell](https://pnp.github.io/powershell/cmdlets/Grant-PnPAzureADAppSitePermission.html)</summary>
+  <summary>Using PnP PowerShell</summary>
+
+[PnP PowerShell](https://pnp.github.io/powershell/cmdlets/Grant-PnPAzureADAppSitePermission.html)
 
 ```powershell
 Connect-PnPOnline -Url "https://YOUR_SHAREPOINT_TENANT_PREFIX.sharepoint.com/sites/YOUR_SHAREPOINT_SITE_NAME" -Interactive -ClientId "YOUR_PNP_APP_CLIENT_ID"
@@ -160,7 +162,9 @@ Grant-PnPAzureADAppSitePermission -AppId "3150363e-afbe-421f-9785-9d5404c5ae34" 
 </details>
    
 <details>
-  <summary>Using [m365 cli](https://pnp.github.io/cli-microsoft365/cmd/spo/site/site-apppermission-add/) in Bash</summary>
+  <summary>Using m365 cli in Bash</summary>
+
+[m365 cli](https://pnp.github.io/cli-microsoft365/cmd/spo/site/site-apppermission-add/)
 
 ```bash
 targetapp="3150363e-afbe-421f-9785-9d5404c5ae34"
