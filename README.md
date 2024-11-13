@@ -72,7 +72,7 @@ If you never heard about `DefaultAzureCredential`, you should familirize yoursel
 ## Grant the functions access to SharePoint when they run on the local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
-Use the PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
+Use the Microsoft Graph PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
@@ -107,7 +107,7 @@ In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.
 Then, use one of the scripts below to grant it the app-only permission `Sites.Selected` on the SharePoint API:
 
 <details>
-  <summary>Using PowerShell</summary>
+  <summary>Using Microsoft Graph PowerShell</summary>
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "AppRoleAssignment.ReadWrite.All"
