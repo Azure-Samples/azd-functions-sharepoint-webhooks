@@ -81,10 +81,10 @@ $requestorAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Micr
 $resourceAppPrincipalObj = Get-MgServicePrincipal -Filter "displayName eq 'Office 365 SharePoint Online'"
 
 $params = @{
-	clientId = $requestorAppPrincipalObj.Id
-	consentType = "AllPrincipals"
-	resourceId = $resourceAppPrincipalObj.Id
-	scope = $scopeName
+  clientId = $requestorAppPrincipalObj.Id
+  consentType = "AllPrincipals"
+  resourceId = $resourceAppPrincipalObj.Id
+  scope = $scopeName
 }
 New-MgOauth2PermissionGrant -BodyParameter $params
 ```
