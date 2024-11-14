@@ -54,6 +54,8 @@ param keyVaultEnableSoftDelete bool = true
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 var tags = { 'azd-env-name': environmentName }
+// Check if allowedIpAddresses is empty or contains only an empty string
+var allowedIpAddressesNoEmptyString = empty(allowedIpAddresses) || (length(allowedIpAddresses) == 1 && contains(allowedIpAddresses, '')) ? [] : allowedIpAddresses
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -109,7 +111,7 @@ module storage './core/storage/storage-account.bicep' = {
     tags: tags
     containers: [{ name: 'deploymentpackage' }]
     publicNetworkAccess: publicNetworkAccess
-    allowedIpAddresses: allowedIpAddresses
+    allowedIpAddresses: allowedIpAddressesNoEmptyString
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
   }
 }
@@ -217,7 +219,7 @@ module vault './core/vault/vault-resource.bicep' = if (addKkeyVault == true) {
     location: location
     tags: tags
     publicNetworkAccess: publicNetworkAccess
-    allowedIpAddresses: allowedIpAddresses
+    allowedIpAddresses: allowedIpAddressesNoEmptyString
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
     tenantId: tenant().tenantId
     enableSoftDelete: keyVaultEnableSoftDelete
