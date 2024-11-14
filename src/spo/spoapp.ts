@@ -2,10 +2,10 @@ import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functio
 import "@pnp/sp/items/index.js";
 import "@pnp/sp/lists/index.js";
 import "@pnp/sp/webs/index.js";
-import { safeWait } from "../common.js";
-import { getSharePointSiteInfo, getSPFI } from "../spAuthentication.js";
+import { safeWait } from "../utils/common.js";
+import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 import { Logger, LogLevel } from "@pnp/logging";
-import { handleError } from "../loggingHandler.js";
+import { handleError } from "../utils/loggingHandler.js";
 
 export async function getWebTitle(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;

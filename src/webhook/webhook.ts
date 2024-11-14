@@ -3,9 +3,9 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { ISubscriptionResponse, safeWait } from "../common.js";
-import { handleError } from "../loggingHandler.js";
-import { getSharePointSiteInfo, getSPFI } from "../spAuthentication.js";
+import { ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { handleError } from "../utils/loggingHandler.js";
+import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
