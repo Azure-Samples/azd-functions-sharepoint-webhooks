@@ -11,9 +11,6 @@
     "resourceGroupName": {
       "value": "${AZURE_ENV_NAME}"
     },
-    "apiServiceName": {
-      "value": "${AZURE_ENV_NAME}"
-    },
     "apiServiceIdentityType": {
       "value": "SystemAssigned"
     },

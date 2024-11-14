@@ -24,16 +24,27 @@ interface SharePointSiteConnection extends SharePointSiteInfo {
 
 const spfiCollection: SharePointSiteConnection[] = [];
 
-export function getSPFI(spSite?: SharePointSiteInfo): SPFI {
-  if (!spSite) {
-    spSite = {
-      tenantPrefix: CommonConfig.TenantPrefix as string,
-      siteRelativePath: CommonConfig.SiteRelativePath as string,
-    }
-  }
+/**
+ * Return a SharePointSiteInfo with information about the SharePoint site
+ * @param tenantPrefix 
+ * @param siteRelativePath 
+ * @returns 
+ */
+export function getSharePointSiteInfo(tenantPrefix?: string, siteRelativePath?: string): SharePointSiteInfo {
+  const sharePointSite: SharePointSiteInfo = {
+    tenantPrefix: tenantPrefix ? tenantPrefix : CommonConfig.TenantPrefix,
+    siteRelativePath: siteRelativePath ? siteRelativePath : CommonConfig.SiteRelativePath,
+  };
+  return sharePointSite;
+}
 
-  let connectionCache: SharePointSiteConnection | undefined;
-  connectionCache = spfiCollection.find(
+/**
+ * Return a SharePoint Framework Interface (SPFI) connection for the SharePoint site specified in parameter
+ * @param spSite 
+ * @returns 
+ */
+export function getSPFI(spSite: SharePointSiteInfo): SPFI {
+  let connectionCache: SharePointSiteConnection | undefined = spfiCollection.find(
     (item) =>
       item.siteRelativePath === spSite.siteRelativePath &&
       item.tenantPrefix === spSite.tenantPrefix
