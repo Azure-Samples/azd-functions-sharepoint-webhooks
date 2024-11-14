@@ -2,8 +2,8 @@ import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functio
 import "@pnp/sp/items/index.js";
 import "@pnp/sp/lists/index.js";
 import "@pnp/sp/webs/index.js";
-import { getSharePointSiteInfo, safeWait } from "../common.js";
-import { getSPFI } from "../spAuthentication.js";
+import { safeWait } from "../common.js";
+import { getSharePointSiteInfo, getSPFI } from "../spAuthentication.js";
 import { Logger, LogLevel } from "@pnp/logging";
 import { handleError } from "../loggingHandler.js";
 

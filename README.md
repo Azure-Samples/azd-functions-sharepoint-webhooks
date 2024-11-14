@@ -16,7 +16,7 @@ urlFragment: functions-quickstart-spo-azd
 # Azure Functions for SharePoint Online
 
 This quickstart uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
-The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault) except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is used).
+The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault) except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).
 
 ## Prerequisites
 
@@ -94,7 +94,8 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
 
 > [!IMPORTANT]  
-> `AllSites.Manage` is the minimum permission required to register a webhook. `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
+> `AllSites.Manage` is the minimum permission required to register a webhook.
+> `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
 ## Grant the functions access to SharePoint when they run in Azure
 
@@ -146,9 +147,9 @@ Navigate to the [Enterprise applications in the Entra ID portal](https://entra.m
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
 
 > [!WARNING]  
-> In this step, we will use the `Application ID` of the managed identity, while in the previous step we used the `Object ID`, be mindful about the risk of confusion.
+> In this step, we will use the `Application ID` of the managed identity, while in the previous step we used its `Object ID`, be mindful about the risk of confusion.
 
-Then, use one of the scripts below to grant it the app-only permission `manage` to a specific SharePoint site:
+Then, use one of the scripts below to grant it the app-only permission `manage` on a specific SharePoint site:
 
 <details>
   <summary>Using PnP PowerShell</summary>

@@ -3,9 +3,9 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { getSharePointSiteInfo, ISubscriptionResponse, safeWait } from "../common.js";
+import { ISubscriptionResponse, safeWait } from "../common.js";
 import { handleError } from "../loggingHandler.js";
-import { getSPFI } from "../spAuthentication.js";
+import { getSharePointSiteInfo, getSPFI } from "../spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
@@ -53,9 +53,9 @@ export async function listRegisteredWehhooks(request: HttpRequest, context: Invo
     let result: any, error: any;
     [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions());
     if (error) {
-        return { status: 400, body: await handleError(error, context, `Could not list webhook for web "${siteRelativePath}" and list "${listTitle}"`) };
+        return { status: 400, body: await handleError(error, context, `Could not list webhook for web "${sharePointSite.siteRelativePath}" and list "${listTitle}"`) };
     }
-    Logger.log({ data: context, message: `Webhooks registered on web "${siteRelativePath}" and list "${listTitle}": ${JSON.stringify(result)}`, level: LogLevel.Info });
+    Logger.log({ data: context, message: `Webhooks registered on web "${sharePointSite.siteRelativePath}" and list "${listTitle}": ${JSON.stringify(result)}`, level: LogLevel.Info });
     return { body: `{ "webhooks": ${JSON.stringify(result)} }` };
 };
 
@@ -84,8 +84,8 @@ export async function removeRegisteredWehhook(request: HttpRequest, context: Inv
     let result: any, error: any;
     [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions.getById(webhookId).delete());
     if (error) {
-        return { status: 400, body: await handleError(error, context, `Could not delete webhook "${webhookId}" for web "${siteRelativePath}" and list "${listTitle}"`) };
+        return { status: 400, body: await handleError(error, context, `Could not delete webhook "${webhookId}" for web "${sharePointSite.siteRelativePath}" and list "${listTitle}"`) };
     }
-    Logger.log({ data: context, message: `Deleted webhook "${webhookId}" registered on web "${siteRelativePath}" and list "${listTitle}".`, level: LogLevel.Info });
+    Logger.log({ data: context, message: `Deleted webhook "${webhookId}" registered on web "${sharePointSite.siteRelativePath}" and list "${listTitle}".`, level: LogLevel.Info });
     return { status: 204 };
 };
