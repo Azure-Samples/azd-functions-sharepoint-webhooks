@@ -15,7 +15,7 @@ urlFragment: functions-quickstart-spo-azd
 
 # Azure Functions for SharePoint Online
 
-This quickstart uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process SharePoint Online webhooks on your own tenant.  
+This quickstart uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
 The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault) except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is used).
 
 ## Prerequisites
