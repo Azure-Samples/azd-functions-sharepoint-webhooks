@@ -63,7 +63,7 @@ You can initialize a project from this `azd` template in one of these ways:
    }
    ```
 
-1. Edit the file `infra\main.parameters.json` to customize the parameters used for the deployment of the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the environment variables.
+1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the environment variables.
 
 1. Install the dependencies and build the functions app:
 
