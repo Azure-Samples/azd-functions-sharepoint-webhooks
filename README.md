@@ -51,8 +51,8 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Add a file named `local.settings.json` in the root of your project with the following contents:
 
-  ```json
-  {
+   ```json
+   {
       "IsEncrypted": false,
       "Values": {
       "AzureWebJobsStorage": "UseDevelopmentStorage=true",
@@ -60,17 +60,17 @@ You can initialize a project from this `azd` template in one of these ways:
       "TenantPrefix": "YOUR_SHAREPOINT_TENANT_PREFIX",
       "SiteRelativePath": "/sites/YOUR_SHAREPOINT_SITE_NAME"
       }
-  }
-  ```
+   }
+   ```
 
 1. Edit the file `infra\main.parameters.json` to customize the parameters used for the deployment of the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the environment variables.
 
 1. Install the dependencies and build the functions app:
 
-  ```shell
-  npm install
-  npm run build
-  ```
+   ```shell
+   npm install
+   npm run build
+   ```
 
 # Grant the functions access to SharePoint Online
 
