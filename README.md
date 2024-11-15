@@ -72,6 +72,8 @@ You can initialize a project from this `azd` template in one of these ways:
    npm run build
    ```
 
+1. Provision the resources in Azure and deploy the functions app package by running command `azd up`.
+
 # Grant the functions access to SharePoint Online
 
 The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions run on the local environment, or in Azure.  
