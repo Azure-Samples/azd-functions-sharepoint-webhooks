@@ -15,7 +15,7 @@ urlFragment: functions-quickstart-spo-azd
 
 # Azure Functions for SharePoint Online
 
-This quickstart uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
+This quickstart is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
 The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault) except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).
 
 ## Prerequisites
@@ -33,37 +33,44 @@ You can initialize a project from this `azd` template in one of these ways:
 
 + Use this `azd init` command from an empty local (root) folder:
 
-
     ```shell
     azd init --template Yvand/functions-quickstart-spo-azd
     ```
 
     Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
 
-+ Clone the GitHub template repository locally using the `git clone` command:
++ Clone the GitHub template repository, and create an `azd` environment (in this example, `spofuncs-quickstart`):
 
     ```shell
     git clone https://github.com/Yvand/functions-quickstart-spo-azd.git
     cd functions-quickstart-spo-azd
+    azd env new spofuncs-quickstart
     ```
-
-    You can also clone the repository from your own fork in GitHub.
 
 ## Prepare your local environment
 
-Add a file named `local.settings.json` in the root of your project with the following contents:
+1. Add a file named `local.settings.json` in the root of your project with the following contents:
 
-```json
-{
-    "IsEncrypted": false,
-    "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "TenantPrefix": "YOUR_SHAREPOINT_TENANT_PREFIX",
-    "SiteRelativePath": "/sites/YOUR_SHAREPOINT_SITE_NAME"
-    }
-}
-```
+  ```json
+  {
+      "IsEncrypted": false,
+      "Values": {
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "FUNCTIONS_WORKER_RUNTIME": "node",
+      "TenantPrefix": "YOUR_SHAREPOINT_TENANT_PREFIX",
+      "SiteRelativePath": "/sites/YOUR_SHAREPOINT_SITE_NAME"
+      }
+  }
+  ```
+
+1. Edit the file `infra\main.parameters.json` to customize the parameters used for the deployment of the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the environment variables.
+
+1. Install the dependencies and build the functions app:
+
+  ```shell
+  npm install
+  npm run build
+  ```
 
 # Grant the functions access to SharePoint Online
 
