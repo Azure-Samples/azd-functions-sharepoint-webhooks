@@ -55,10 +55,10 @@ You can initialize a project from this `azd` template in one of these ways:
    {
       "IsEncrypted": false,
       "Values": {
-      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-      "FUNCTIONS_WORKER_RUNTIME": "node",
-      "TenantPrefix": "YOUR_SHAREPOINT_TENANT_PREFIX",
-      "SiteRelativePath": "/sites/YOUR_SHAREPOINT_SITE_NAME"
+         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+         "FUNCTIONS_WORKER_RUNTIME": "node",
+         "TenantPrefix": "YOUR_SHAREPOINT_TENANT_PREFIX",
+         "SiteRelativePath": "/sites/YOUR_SHAREPOINT_SITE_NAME"
       }
    }
    ```
@@ -73,6 +73,8 @@ You can initialize a project from this `azd` template in one of these ways:
    ```
 
 1. Provision the resources in Azure and deploy the functions app package by running command `azd up`.
+
+1. The functions can also be run locally by executing command `npm run start`.
 
 # Grant the functions access to SharePoint Online
 
@@ -187,3 +189,49 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 
 > [!IMPORTANT]  
 > `manage` is the minimum permission required to register a webhook.
+
+## Call your functions
+
+For security reasons, when running in Azure, functions require an app key to be passed in query string parameter `code`. The app keys can be found in the functions app service > App Keys.  
+Most functions take optional parameters `tenantPrefix` and `siteRelativePath`. If they are not specified, the value set in the app's environment variables will be used.
+
+### Using vscode extension RestClient
+
+You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http files.  
+They require parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
+
+### Using curl
+
+Below are some examples of functions called using `curl`.
+
++ Call the functions running in your local environment
+
+```shell
+# Call the functions running in your local environment
+# if only parameter listTitle is set, the functions will use the tenantPrefix and siteRelativePath configured in the file local.settings.json
+curl --location 'http://localhost:7071/api/webhook/listRegistered?listTitle=YOUR_SHAREPOINT_LIST'
+
+# Or you can specify different values for tenantPrefix and siteRelativePath
+curl --location 'http://localhost:7071/api/webhook/listRegistered?listTitle=YOUR_SHAREPOINT_LIST&tenantPrefix=YOUR_SHAREPOINT_TENANT_PREFIX&siteRelativePath=/sites/YOUR_SHAREPOINT_SITE_NAME'
+
+# Call the functions running in Azure
+
+```
+
++ Call the functions running in Azure
+
+```shell
+# Edit those variables to fit your app function
+funchost="YOUR_FUNC_APP_NAME"
+code="YOUR_HOST_KEY"
+notificationUrl="https://${funchost}.azurewebsites.net/api/webhook/service?code=${code}"
+
+# List all webhooks on a list
+curl --location "https://${funchost}.azurewebsites.net/api/webhook/listRegistered?code=${code}&listTitle=YOUR_SHAREPOINT_LIST"
+
+# Register a webhook
+curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/register?code=${code}&listTitle=YOUR_SHAREPOINT_LIST&notificationUrl=${notificationUrl}"
+
+# Show this webhook registered on a list
+curl --location "https://${funchost}.azurewebsites.net/api/webhook/showRegistered?code=${code}&listTitle=YOUR_SHAREPOINT_LIST&notificationUrl=${notificationUrl}"
+```

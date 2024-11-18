@@ -46,3 +46,6 @@ __pycache__/
 __blobstorage__
 __queuestorage__
 __azurite_db*__.json
+
+# exmple of .env files for test files, used by extension REST Client (humao.rest-client)
+!*.env.example
