@@ -204,36 +204,26 @@ They require parameters from a .env file on the same folder. You can create it b
 
 Below are some examples of functions called using `curl`.
 
-+ Call the functions running in your local environment
-
-```shell
-# Call the functions running in your local environment
-# if only parameter listTitle is set, the functions will use the tenantPrefix and siteRelativePath configured in the file local.settings.json
-curl --location 'http://localhost:7071/api/webhook/listRegistered?listTitle=YOUR_SHAREPOINT_LIST'
-
-# Or you can specify different values for tenantPrefix and siteRelativePath
-curl --location 'http://localhost:7071/api/webhook/listRegistered?listTitle=YOUR_SHAREPOINT_LIST&tenantPrefix=YOUR_SHAREPOINT_TENANT_PREFIX&siteRelativePath=/sites/YOUR_SHAREPOINT_SITE_NAME'
-
-# Call the functions running in Azure
-
-```
-
-+ Call the functions running in Azure
-
 ```shell
 # Edit those variables to fit your app function
 funchost="YOUR_FUNC_APP_NAME"
 code="YOUR_HOST_KEY"
 notificationUrl="https://${funchost}.azurewebsites.net/api/webhook/service?code=${code}"
+listTitle="YOUR_SHAREPOINT_LIST"
 
 # List all webhooks on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhook/listRegistered?code=${code}&listTitle=YOUR_SHAREPOINT_LIST"
+curl --location "https://${funchost}.azurewebsites.net/api/webhook/listRegistered?code=${code}&listTitle=${listTitle}"
 
 # Register a webhook
-curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/register?code=${code}&listTitle=YOUR_SHAREPOINT_LIST&notificationUrl=${notificationUrl}"
+curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/register?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Show this webhook registered on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhook/showRegistered?code=${code}&listTitle=YOUR_SHAREPOINT_LIST&notificationUrl=${notificationUrl}"
+curl --location "https://${funchost}.azurewebsites.net/api/webhook/showRegistered?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+
+# Remove the webhook from the list
+# You can get the webhook id in the output of the function showRegistered above
+webhookId="5964efeb-c797-4b2d-a911-c676b942511f"
+curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/removeRegistered?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
 
 ## Review the logs
