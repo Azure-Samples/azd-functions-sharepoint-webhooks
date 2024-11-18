@@ -65,8 +65,8 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
-  > [!WARNING]  
-  > Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
+   > [!WARNING]  
+   > Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
 
 1. Install the dependencies and build the functions app:
 
