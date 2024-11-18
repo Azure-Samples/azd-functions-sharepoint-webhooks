@@ -63,7 +63,10 @@ You can initialize a project from this `azd` template in one of these ways:
    }
    ```
 
-1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the environment variables.
+1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
+
+> [!WARNING]  
+> Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
 
 1. Install the dependencies and build the functions app:
 
@@ -190,10 +193,10 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 > [!IMPORTANT]  
 > `manage` is the minimum permission required to register a webhook.
 
-## Call your functions
+## Call the functions
 
-For security reasons, when running in Azure, functions require an app key to be passed in query string parameter `code`. The app keys can be found in the functions app service > App Keys.  
-Most functions take optional parameters `tenantPrefix` and `siteRelativePath`. If they are not specified, the value set in the app's environment variables will be used.
+For security reasons, when running in Azure, functions require an app key to pass in query string parameter `code`. The app keys can be found in the functions app service > App Keys.  
+Most functions take optional parameters `tenantPrefix` and `siteRelativePath`. If they are not specified, the values set in the app's environment variables will be used.
 
 ### Using vscode extension RestClient
 
@@ -202,9 +205,9 @@ They require parameters from a .env file on the same folder. You can create it b
 
 ### Using curl
 
-Below are some examples of functions called using `curl`.
+Below is a sample script in Bash that calls the functions in Azure using `curl`:
 
-```shell
+```bash
 # Edit those variables to fit your app function
 funchost="YOUR_FUNC_APP_NAME"
 code="YOUR_HOST_KEY"
@@ -221,7 +224,7 @@ curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/regis
 curl --location "https://${funchost}.azurewebsites.net/api/webhook/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# You can get the webhook id in the output of the function show above
+# You can get the webhook id in the output of the function /webhook/show above
 webhookId="5964efeb-c797-4b2d-a911-c676b942511f"
 curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
