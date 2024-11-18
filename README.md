@@ -235,3 +235,15 @@ curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/regis
 # Show this webhook registered on a list
 curl --location "https://${funchost}.azurewebsites.net/api/webhook/showRegistered?code=${code}&listTitle=YOUR_SHAREPOINT_LIST&notificationUrl=${notificationUrl}"
 ```
+
+## Review the logs
+
+When the functions run in your local environment, the logging goes to the console.  
+When the functions run in Azure, the logging goes to the Application Insights resource created with the app service.  
+To filter the logs and show only the messages from the functions, you may use this KQL query:
+
+```kql
+traces 
+| where isnotempty(operation_Name)
+| project timestamp, operation_Name, severityLevel, message
+```
