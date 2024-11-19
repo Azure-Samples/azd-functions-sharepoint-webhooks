@@ -253,3 +253,7 @@ traces
 | where operation_Name contains "webhook-service"
 | project timestamp, operation_Name, severityLevel, message
 ```
+
+## Known issues
+
+Azure Functions Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations).
