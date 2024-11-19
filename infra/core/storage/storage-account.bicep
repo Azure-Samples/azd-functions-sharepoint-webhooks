@@ -3,14 +3,12 @@ param location string = resourceGroup().location
 param tags object = {}
 
 param allowBlobPublicAccess bool = false
-@allowed(['Enabled', 'Disabled', 'SecuredByPerimeter'])
-param publicNetworkAccess string = 'Enabled'
 param containers array = []
 param kind string = 'StorageV2'
 param minimumTlsVersion string = 'TLS1_2'
 param sku object = { name: 'Standard_LRS' }
 param allowedIpAddresses array = []
-param virtualNetworkSubnetId string
+// param virtualNetworkSubnetId string
 
 var ipRules = [
   for ipAddress in allowedIpAddresses: {
@@ -28,18 +26,19 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   properties: {
     minimumTlsVersion: minimumTlsVersion
     allowBlobPublicAccess: allowBlobPublicAccess
-    publicNetworkAccess: publicNetworkAccess
+    publicNetworkAccess: empty(allowedIpAddresses) ? 'Disabled': 'Enabled'
     allowSharedKeyAccess: false
     defaultToOAuthAuthentication: true
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
       ipRules: empty(allowedIpAddresses) ? [] : ipRules
-      virtualNetworkRules: [
-        {
-          id: virtualNetworkSubnetId
-        }
-      ]
+      // Not necessary since a private endpoint ensures the connection between the apps ervice and this storage account
+      // virtualNetworkRules: [
+      //   {
+      //     id: virtualNetworkSubnetId
+      //   }
+      // ]
     }
   }
 
