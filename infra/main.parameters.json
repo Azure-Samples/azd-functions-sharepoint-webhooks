@@ -19,9 +19,6 @@
         "${ALLOWEDIPADDRESSES}"
       ]
     },
-    "appFunctionType": {
-      "value": "Flex"
-    },
     "keyVaultEnableSoftDelete": {
       "value": false
     },
