@@ -47,7 +47,6 @@ param storageAccountName string = ''
 param vNetName string = ''
 param vaultName string = ''
 param disableLocalAuth bool = true
-param publicNetworkAccess string = 'Enabled'
 param addKkeyVault bool = false
 param keyVaultEnableSoftDelete bool = true
 
@@ -110,9 +109,7 @@ module storage './core/storage/storage-account.bicep' = {
     location: location
     tags: tags
     containers: [{ name: 'deploymentpackage' }]
-    publicNetworkAccess: publicNetworkAccess
     allowedIpAddresses: allowedIpAddressesNoEmptyString
-    virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
   }
 }
 
@@ -218,7 +215,6 @@ module vault './core/vault/vault-resource.bicep' = if (addKkeyVault == true) {
     name: !empty(vaultName) ? vaultName : '${abbrs.vaultAccounts}${resourceToken}'
     location: location
     tags: tags
-    publicNetworkAccess: publicNetworkAccess
     allowedIpAddresses: allowedIpAddressesNoEmptyString
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
     tenantId: tenant().tenantId
