@@ -16,7 +16,9 @@ urlFragment: functions-quickstart-spo-azd
 # Azure Functions for SharePoint Online
 
 This quickstart is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy Azure Functions which can list, register and process [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
-The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault) except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).
+The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault), except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).  
+The Azure functions use the [Flex Consumption plan ](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), are written in TypeScript and run in Node.js 20.  
+The popular library [PnPjs](https://pnp.github.io/pnpjs/) is used to interact with SharePoint.
 
 ## Prerequisites
 
@@ -65,8 +67,7 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
-   > [!WARNING]  
-   > Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
+  Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
 
 1. Install the dependencies and build the functions app:
 
@@ -81,7 +82,7 @@ You can initialize a project from this `azd` template in one of these ways:
 
 # Grant the functions access to SharePoint Online
 
-The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions run on the local environment, or in Azure.  
+The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the functions run on your local environment, or in Azure.  
 If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility), before continuing.
 
 ## Grant the functions access to SharePoint when they run on the local environment
@@ -232,11 +233,22 @@ curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/remov
 ## Review the logs
 
 When the functions run in your local environment, the logging goes to the console.  
-When the functions run in Azure, the logging goes to the Application Insights resource created with the app service.  
-To filter the logs and show only the messages from the functions, you may use this KQL query:
+When the functions run in Azure, the logging goes to the Application Insights resource configured in the app service.  
+
+### KQL queries for Application Insights
+
+The KQL query below shows the messages from all the functions, and filters out the logging from the infrastructure:
 
 ```kql
 traces 
 | where isnotempty(operation_Name)
+| project timestamp, operation_Name, severityLevel, message
+```
+
+The KQL query below shows the messages only from the function `webhook/service` (which receives the notifications from SharePoint):
+
+```kql
+traces 
+| where operation_Name contains "webhook-service"
 | project timestamp, operation_Name, severityLevel, message
 ```
