@@ -3,9 +3,9 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { ISubscriptionResponse, safeWait } from "../common.js";
-import { handleError } from "../loggingHandler.js";
-import { getSharePointSiteInfo, getSPFI } from "../spAuthentication.js";
+import { ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { handleError } from "../utils/loggingHandler.js";
+import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
@@ -41,7 +41,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
     return { body: message };
 };
 
-export async function listRegisteredWehhooks(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function listWehhooks(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
     const tenantPrefix = request.query.get('tenantPrefix') || undefined;
     const listTitle = request.query.get('listTitle');
@@ -59,11 +59,11 @@ export async function listRegisteredWehhooks(request: HttpRequest, context: Invo
     return { body: `{ "webhooks": ${JSON.stringify(result)} }` };
 };
 
-export async function showRegisteredWehhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function showWehhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const notificationUrl = request.query.get('notificationUrl');
     if (!notificationUrl) { return { status: 400, body: `Required parameters are missing.` }; }
 
-    const webhooks = await listRegisteredWehhooks(request, context);
+    const webhooks = await listWehhooks(request, context);
     if (!webhooks || !webhooks.body) { return { status: 200, body: `No webhook found.` }; }
     const webhooksBody = JSON.parse(webhooks.body.toString());
     const webhooksJson: ISubscriptionResponse[] = webhooksBody.webhooks;
@@ -71,7 +71,7 @@ export async function showRegisteredWehhook(request: HttpRequest, context: Invoc
     return { body: JSON.stringify(webhook) };
 };
 
-export async function removeRegisteredWehhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function removeWehhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
     const tenantPrefix = request.query.get('tenantPrefix') || undefined;
     const listTitle = request.query.get('listTitle');
