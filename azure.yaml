@@ -2,7 +2,7 @@
 
 name: functions-quickstart-spo-azd
 metadata:
-  template: Yvand/functions-quickstart-spo-azd@1.0.0.rc-3
+  template: Yvand/functions-quickstart-spo-azd@1.0.0.rc-4
 services:
   api:
     project: .
