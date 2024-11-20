@@ -22,9 +22,9 @@ The popular library [PnPjs](https://pnp.github.io/pnpjs/) is used to interact wi
 ## Security of the Azure resources
 
 The resources deployed in Azure are configured with a high level of security: 
-- No public access is allowed on storage account and key vault, except on specified IPs (configurable).
-- Azure functions connect to the storage account using a private endpoint.
-- Authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).
+- The functions service connects to the storage account and the key vault using a private endpoint.
+- No network access is allowed on the storage account and the key vault, except on specified IPs (configurable).
+- Authorization is configured using the functions service's managed identity (no access key or legacy access policy is enabled).
 
 ## Prerequisites
 
