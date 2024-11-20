@@ -23,16 +23,17 @@ resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     tenantId: tenantId
     enableSoftDelete: enableSoftDelete
     enableRbacAuthorization: true
-    publicNetworkAccess: empty(allowedIpAddresses) && empty(virtualNetworkSubnetId) ? 'Disabled': 'Enabled'
+    publicNetworkAccess: empty(allowedIpAddresses) ? 'Disabled': 'Enabled'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
       ipRules: empty(allowedIpAddresses) ? [] : ipRules
-      virtualNetworkRules: [
-        {
-          id: virtualNetworkSubnetId
-        }
-      ]
+      // Not necessary since a private endpoint ensures the connection between the apps ervice and this storage account
+      // virtualNetworkRules: [
+      //   {
+      //     id: virtualNetworkSubnetId
+      //   }
+      // ]
     }
   }
 }
