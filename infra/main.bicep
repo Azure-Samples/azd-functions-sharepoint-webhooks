@@ -79,13 +79,14 @@ module apiUserAssignedIdentity './core/identity/userAssignedIdentity.bicep' = if
 }
 
 // Virtual Network & private endpoint
+var virtualNetworkName = !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
 module serviceVirtualNetwork 'app/vnet.bicep' = {
   name: 'serviceVirtualNetwork'
   scope: rg
   params: {
     location: location
     tags: tags
-    vNetName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+    vNetName: virtualNetworkName
     appFunctionType: appFunctionType
   }
 }
@@ -96,7 +97,7 @@ module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = {
   params: {
     location: location
     tags: tags
-    virtualNetworkName: !empty(vNetName) ? vNetName : '${abbrs.networkVirtualNetworks}${resourceToken}'
+    virtualNetworkName: virtualNetworkName
     subnetName: serviceVirtualNetwork.outputs.peSubnetName
     resourceName: storage.outputs.name
   }
@@ -240,6 +241,18 @@ module vaultRoleAssignmentApi './core/vault/vault-access.bicep' = if (addKkeyVau
     principalID: apiServiceIdentityType == 'UserAssigned'
       ? apiUserAssignedIdentity.outputs.identityPrincipalId
       : api.outputs.SERVICE_API_IDENTITY_PRINCIPAL_ID
+  }
+}
+
+module vaultPrivateEndpoint 'core/vault/vault-privateEndpoint.bicep' = if (addKkeyVault == true) {
+  name: 'vaultPrivateEndpoint'
+  scope: rg
+  params: {
+    location: location
+    tags: tags
+    virtualNetworkName: virtualNetworkName
+    subnetName: serviceVirtualNetwork.outputs.peSubnetName
+    resourceName: vault.outputs.name
   }
 }
 
