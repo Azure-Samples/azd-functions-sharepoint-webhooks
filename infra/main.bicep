@@ -44,7 +44,6 @@ param logAnalyticsName string = ''
 param storageAccountName string = ''
 param vNetName string = ''
 param vaultName string = ''
-param disableLocalAuth bool = true
 param addKkeyVault bool = false
 param keyVaultEnableSoftDelete bool = true
 
@@ -191,7 +190,6 @@ module monitoring './core/monitor/monitoring.bicep' = {
     applicationInsightsName: !empty(applicationInsightsName)
       ? applicationInsightsName
       : '${abbrs.insightsComponents}${resourceToken}'
-    disableLocalAuth: disableLocalAuth
   }
 }
 
