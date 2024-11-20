@@ -11,12 +11,9 @@
     "resourceGroupName": {
       "value": "${AZURE_ENV_NAME}"
     },
-    "apiServiceIdentityType": {
-      "value": "SystemAssigned"
-    },
     "allowedIpAddresses": {
       "value": [
-        "${ALLOWEDIPADDRESSES}"
+        "${ALLOWED_IP_ADDRESSES}"
       ]
     },
     "keyVaultEnableSoftDelete": {
