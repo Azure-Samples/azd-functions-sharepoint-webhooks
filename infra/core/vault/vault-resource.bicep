@@ -3,12 +3,10 @@ param location string = resourceGroup().location
 param tags object = {}
 param tenantId string
 
-@allowed(['Enabled', 'Disabled'])
-param publicNetworkAccess string = 'Disabled'
 param sku object = { family: 'A', name: 'standard' }
 param allowedIpAddresses array = []
-param virtualNetworkSubnetId string
 param enableSoftDelete bool = true
+param virtualNetworkSubnetId string
 
 var ipRules = [
   for ipAddress in allowedIpAddresses: {
@@ -25,17 +23,17 @@ resource vault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     tenantId: tenantId
     enableSoftDelete: enableSoftDelete
     enableRbacAuthorization: true
-    publicNetworkAccess: publicNetworkAccess
+    publicNetworkAccess: empty(allowedIpAddresses) ? 'Disabled': 'Enabled'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
       ipRules: empty(allowedIpAddresses) ? [] : ipRules
-      // virtualNetworkRules: map([virtualNetworkSubnetId], subnetId => { id: subnetId })
-      virtualNetworkRules: [
-        {
-          id: virtualNetworkSubnetId
-        }
-      ]
+      // Not necessary since a private endpoint ensures the connection between the apps ervice and this storage account
+      // virtualNetworkRules: [
+      //   {
+      //     id: virtualNetworkSubnetId
+      //   }
+      // ]
     }
   }
 }

@@ -11,22 +11,10 @@
     "resourceGroupName": {
       "value": "${AZURE_ENV_NAME}"
     },
-    "apiServiceIdentityType": {
-      "value": "SystemAssigned"
-    },
     "allowedIpAddresses": {
       "value": [
-        "${ALLOWEDIPADDRESSES}"
+        "${ALLOWED_IP_ADDRESSES}"
       ]
-    },
-    "appFunctionType": {
-      "value": "Flex"
-    },
-    "keyVaultEnableSoftDelete": {
-      "value": false
-    },
-    "addKkeyVault": {
-      "value": false
     },
     "appSettings": {
       "value": {
