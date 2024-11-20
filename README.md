@@ -19,7 +19,12 @@ This quickstart is based on [this repository](https://github.com/Azure-Samples/f
 The Azure functions use the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), are written in TypeScript and run in Node.js 20.  
 The popular library [PnPjs](https://pnp.github.io/pnpjs/) is used to interact with SharePoint.  
 
-The resources deployed in Azure are configured with a high level of security: No public access is allowed on critical resources (storage account and key vault), except on specified IPs (configurable), and authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).  
+## Security of the Azure resources
+
+The resources deployed in Azure are configured with a high level of security: 
+- No public access is allowed on storage account and key vault, except on specified IPs (configurable).
+- Azure functions connect to the storage account using a private endpoint.
+- Authorization is granted only through the functions service's managed identity (no access key or legacy access policy is enabled).
 
 ## Prerequisites
 
