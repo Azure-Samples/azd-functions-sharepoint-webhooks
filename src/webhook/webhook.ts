@@ -37,7 +37,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
     }
 
     const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
-    const message = `Received webhook notification: ${body.value.length} events for resource \"${body.value[0].resource}\" on site \"${body.value[0].siteUrl}\"`;
+    const message = `Received webhook notification: ${body.value.length} event(s) for resource \"${body.value[0].resource}\" on site \"${body.value[0].siteUrl}\"`;
     Logger.log({ data: context, message: message, level: LogLevel.Info });
 
     const sharePointSite = getSharePointSiteInfo();
