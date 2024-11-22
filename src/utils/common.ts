@@ -26,3 +26,17 @@ export interface ISubscriptionResponse {
     resourceData: string;
     scenarios: string;
 }
+
+export interface ISharePointWeebhookEvent {
+    value: ISharePointWeebhookEventValue[];
+}
+
+export interface ISharePointWeebhookEventValue {
+    subscriptionId: string;
+    clientState: string;
+    expirationDateTime: string;
+    resource: string;
+    tenantId: string;
+    siteUrl: string;
+    webId: string;
+}

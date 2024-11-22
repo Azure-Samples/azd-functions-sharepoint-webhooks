@@ -3,7 +3,7 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { CommonConfig, ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { handleError } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 import { IListEnsureResult } from "@pnp/sp/lists/types.js";
@@ -36,8 +36,9 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         return { headers: { 'Content-Type': 'text/plain' }, body: validationtoken };
     }
 
-    const body = await request.json();
-    Logger.log({ data: context, message: `Received webhook notification: ${JSON.stringify(body)}`, level: LogLevel.Info });
+    const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
+    const message = `Received webhook notification: ${body.value.length} events for resource \"${body.value[0].resource}\" on site \"${body.value[0].siteUrl}\"`;
+    Logger.log({ data: context, message: message, level: LogLevel.Info });
 
     const sharePointSite = getSharePointSiteInfo();
     const sp = getSPFI(sharePointSite);
@@ -52,8 +53,8 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         Logger.log({ data: context, message: message, level: LogLevel.Info });
     }
     let result: any;
-    [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
-        Title: JSON.stringify(body)
+    [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
+        Title: message
     }));
     if (error) {
         await handleError(error, context, `Could not add an item to the list "${CommonConfig.WebhookHistoryListTitle}": `);
