@@ -3,7 +3,7 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { CommonConfig, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { handleError } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
@@ -38,6 +38,18 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
     const body = await request.json();
     let message = `Received webhook notification: ${JSON.stringify(body)}`;
     Logger.log({ data: context, message: message, level: LogLevel.Info });
+
+    const sharePointSite = getSharePointSiteInfo();
+    const sp = getSPFI(sharePointSite);
+    const webhookHistoryListEnsureResult = await sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle);
+    if (webhookHistoryListEnsureResult.created === true) {
+        let message = `List "${CommonConfig.WebhookHistoryListTitle}" (to log the webhook notifications) did not exist and was just created.`;
+        Logger.log({ data: context, message: message, level: LogLevel.Info });
+    }
+    await sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
+        Title: JSON.stringify(body)
+    });
+
     return { body: message };
 };
 
