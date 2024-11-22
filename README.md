@@ -262,3 +262,7 @@ traces
 ## Known issues
 
 Azure Functions Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations).
+
+## Cleanup the resources in Azure
+
+You can delete all the resources this project created in Azure, by running the command `azd down`.
