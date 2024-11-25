@@ -206,8 +206,9 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 > The app registration used to run those commands must have at least the following permissions:
 > - Delegated permission `Application.ReadWrite.All` in the Graph API
 > - Delegated permission `AllSites.FullControl` in the SharePoint API
-> 
-> `manage` is the minimum permission required in a SharePoint site to register a webhook.
+
+> [!IMPORTANT]  
+> The managed identity of the functions service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
 
 ## Call the functions
 
