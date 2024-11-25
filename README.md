@@ -135,7 +135,7 @@ In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.
 Then, use one of the scripts below to grant it the app-only permission `Sites.Selected` on the SharePoint API:
 
 <details>
-  <summary>Using Microsoft Graph PowerShell</summary>
+  <summary>Using the Microsoft Graph PowerShell SDK</summary>
 
 ```powershell
 # This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with the cmdlet Install-Module below:
