@@ -177,6 +177,9 @@ In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.
 
 Then, use one of the scripts below to grant it the app-only permission `manage` on a specific SharePoint site:
 
+> [!IMPORTANT]  
+> The managed identity of the functions service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
+
 <details>
   <summary>Using PnP PowerShell</summary>
 
@@ -206,9 +209,6 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 > The app registration used to run those commands must have at least the following permissions:
 > - Delegated permission `Application.ReadWrite.All` in the Graph API
 > - Delegated permission `AllSites.FullControl` in the SharePoint API
-
-> [!IMPORTANT]  
-> The managed identity of the functions service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
 
 ## Call the functions
 
