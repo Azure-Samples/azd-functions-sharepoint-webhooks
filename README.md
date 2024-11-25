@@ -231,22 +231,22 @@ Below is a sample script in Bash that calls the functions in Azure using `curl`:
 # Edit those variables to fit your app function
 funchost="YOUR_FUNC_APP_NAME"
 code="YOUR_HOST_KEY"
-notificationUrl="https://${funchost}.azurewebsites.net/api/webhook/service?code=${code}"
+notificationUrl="https://${funchost}.azurewebsites.net/api/webhooks/service?code=${code}"
 listTitle="YOUR_SHAREPOINT_LIST"
 
 # List all webhooks on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhook/list?code=${code}&listTitle=${listTitle}"
+curl --location "https://${funchost}.azurewebsites.net/api/webhooks/list?code=${code}&listTitle=${listTitle}"
 
 # Register a webhook
-curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/register?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhooks/register?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Show this webhook registered on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhook/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+curl --location "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# You can get the webhook id in the output of the function /webhook/show above
+# You can get the webhook id in the output of the function /webhooks/show above
 webhookId="5964efeb-c797-4b2d-a911-c676b942511f"
-curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhook/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
+curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhooks/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
 
 ## Review the logs
@@ -264,7 +264,7 @@ traces
 | project timestamp, operation_Name, severityLevel, message
 ```
 
-The KQL query below shows the messages only from the function `webhook/service` (which receives the notifications from SharePoint):
+The KQL query below shows the messages only from the function `webhooks/service` (which receives the notifications from SharePoint):
 
 ```kql
 traces 
