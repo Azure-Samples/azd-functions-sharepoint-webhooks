@@ -268,7 +268,7 @@ The KQL query below shows the messages only from the function `webhooks/service`
 
 ```kql
 traces 
-| where operation_Name contains "webhook-service"
+| where operation_Name contains "webhooks-service"
 | project timestamp, operation_Name, severityLevel, message
 ```
 
