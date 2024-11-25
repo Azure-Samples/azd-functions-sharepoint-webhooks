@@ -220,8 +220,8 @@ Most functions take optional parameters `tenantPrefix` and `siteRelativePath`. I
 
 ### Using vscode extension RestClient
 
-You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http files.  
-They require parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
+You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http file.  
+It takes parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
 
 ### Using curl
 
