@@ -16,6 +16,15 @@
         "${ALLOWED_IP_ADDRESSES}"
       ]
     },
+    "apiServiceName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "keyVaultEnableSoftDelete": {
+      "value": false
+    },
+    "addKkeyVault": {
+      "value": false
+    },
     "appSettings": {
       "value": {
         "TenantPrefix": "${TenantPrefix}",

@@ -120,7 +120,7 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > [!WARNING]  
 > The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
 
-> [!IMPORTANT]  
+> [!NOTE]  
 > `AllSites.Manage` is the minimum permission required to register a webhook.
 > `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
@@ -180,7 +180,7 @@ In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.
 
 Then, use one of the scripts below to grant it the app-only permission `manage` on a specific SharePoint site:
 
-> [!IMPORTANT]  
+> [!NOTE]  
 > The managed identity of the functions service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
 
 <details>
