@@ -19,6 +19,11 @@ This quickstart is based on [this repository](https://github.com/Azure-Samples/f
 The Azure functions use the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), are written in TypeScript and run in Node.js 20.  
 The popular library [PnPjs](https://pnp.github.io/pnpjs/) is used to interact with SharePoint.  
 
+## Overview
+
+5 HTTP-triggered functions are deployed to show, list, register, process and remove webhooks.  
+When receiving a notification from SharePoint, the service function will add a new item to the list `webhookHistory` (can be changed in environment variable `WebhookHistoryListTitle`). It will also record the event in Application Insights.
+
 ## Security of the Azure resources
 
 The resources deployed in Azure are configured with a high level of security: 
@@ -73,7 +78,7 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
-   Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
+   Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure).
 
 1. Install the dependencies and build the functions app:
 
@@ -198,7 +203,10 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 </details>
 
 > [!IMPORTANT]  
-> `manage` is the minimum permission required to register a webhook.
+> The app registration used to run those commands must have at least the following permissions:
+> - Delegated permission `Application.ReadWrite.All` in the Graph API
+> - Delegated permission `AllSites.FullControl` in the SharePoint API
+> `manage` is the minimum permission required in a SharePoint site to register a webhook.
 
 ## Call the functions
 
