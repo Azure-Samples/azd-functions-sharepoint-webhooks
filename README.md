@@ -138,7 +138,7 @@ Then, use one of the scripts below to grant it the app-only permission `Sites.Se
   <summary>Using Microsoft Graph PowerShell</summary>
 
 ```powershell
-# This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with cmdlet Install-Module:
+# This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with the cmdlet Install-Module below:
 # Install-Module Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns -Scope CurrentUser -Repository PSGallery -Force
 Connect-MgGraph -Scope "Application.Read.All", "AppRoleAssignment.ReadWrite.All"
 $managedIdentityObjectId = "d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
