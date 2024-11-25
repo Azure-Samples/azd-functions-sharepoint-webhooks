@@ -30,6 +30,7 @@ The resources deployed in Azure are configured with a high level of security:
 - The functions service connects to the storage account and the key vault using a private endpoint.
 - No network access is allowed on the storage account and the key vault, except on specified IPs (configurable).
 - Authorization is configured using the functions service's managed identity (no access key or legacy access policy is enabled).
+- All the functions require a key to be called.
 
 ## Prerequisites
 
