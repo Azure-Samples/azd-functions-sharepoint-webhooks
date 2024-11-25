@@ -1,6 +1,6 @@
 {
   "name": "functions-quickstart-spo-azd",
-  "version": "1.0.0.rc-4",
+  "version": "1.0.0.rc-5",
   "author": {
     "name": "Yvan Duhamel"
   },
@@ -10,7 +10,7 @@
   },
   "description": "This Quickstart uses Azure Developer command-line (azd) tools to create functions for SharePoint Online",
   "license": "MIT",
-  "main": "dist/src/functions/*.js",
+  "main": "dist/src/functions-definition/*.js",
   "type": "module",
   "scripts": {
     "build": "tsc",

@@ -19,7 +19,8 @@
     "appSettings": {
       "value": {
         "TenantPrefix": "${TenantPrefix}",
-        "SiteRelativePath": "${SiteRelativePath}"
+        "SiteRelativePath": "${SiteRelativePath}",
+        "WebhookHistoryListTitle": "webhookHistory"
       }
     }
   }
