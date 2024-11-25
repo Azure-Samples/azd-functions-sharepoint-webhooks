@@ -7,6 +7,7 @@ export const CommonConfig = {
     SiteRelativePath: process.env.SiteRelativePath || "",
     IsLocalEnvironment: process.env.AZURE_FUNCTIONS_ENVIRONMENT === "Development" ? true : false,
     UserAssignedManagedIdentityClientId: process.env.UserAssignedManagedIdentityClientId || undefined,
+    WebhookHistoryListTitle: process.env.WebhookHistoryListTitle || "webhookHistory",
 }
 
 // This method awaits on async calls and catches the exception if there is any - https://dev.to/sobiodarlington/better-error-handling-with-async-await-2e5m
@@ -24,4 +25,18 @@ export interface ISubscriptionResponse {
     resource: string;
     resourceData: string;
     scenarios: string;
+}
+
+export interface ISharePointWeebhookEvent {
+    value: ISharePointWeebhookEventValue[];
+}
+
+export interface ISharePointWeebhookEventValue {
+    subscriptionId: string;
+    clientState: string;
+    expirationDateTime: string;
+    resource: string;
+    tenantId: string;
+    siteUrl: string;
+    webId: string;
 }

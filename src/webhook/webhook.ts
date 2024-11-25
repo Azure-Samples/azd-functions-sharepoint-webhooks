@@ -3,9 +3,10 @@ import { dateAdd } from "@pnp/core";
 import { Logger, LogLevel } from "@pnp/logging";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { handleError } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
+import { IListEnsureResult } from "@pnp/sp/lists/types.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const siteRelativePath = request.query.get('siteRelativePath') || undefined;
@@ -35,10 +36,32 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         return { headers: { 'Content-Type': 'text/plain' }, body: validationtoken };
     }
 
-    const body = await request.json();
-    let message = `Received webhook notification: ${JSON.stringify(body)}`;
+    const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
+    const message = `Received webhook notification: ${body.value.length} event(s) for resource \"${body.value[0].resource}\" on site \"${body.value[0].siteUrl}\"`;
     Logger.log({ data: context, message: message, level: LogLevel.Info });
-    return { body: message };
+
+    const sharePointSite = getSharePointSiteInfo();
+    const sp = getSPFI(sharePointSite);
+    let webhookHistoryListEnsureResult: IListEnsureResult, error: any;
+    [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle));
+    if (error) {
+        await handleError(error, context, `Could not ensure that list "${CommonConfig.WebhookHistoryListTitle}" exists: `);
+        return { body: '' };
+    }
+    if (webhookHistoryListEnsureResult.created === true) {
+        let message = `List "${CommonConfig.WebhookHistoryListTitle}" (to log the webhook notifications) did not exist and was just created.`;
+        Logger.log({ data: context, message: message, level: LogLevel.Info });
+    }
+    let result: any;
+    [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
+        Title: message
+    }));
+    if (error) {
+        await handleError(error, context, `Could not add an item to the list "${CommonConfig.WebhookHistoryListTitle}": `);
+        return { body: '' };
+    }
+
+    return { body: '' };
 };
 
 export async function listWehhooks(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {

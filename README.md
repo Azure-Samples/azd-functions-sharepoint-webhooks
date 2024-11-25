@@ -19,12 +19,18 @@ This quickstart is based on [this repository](https://github.com/Azure-Samples/f
 The Azure functions use the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), are written in TypeScript and run in Node.js 20.  
 The popular library [PnPjs](https://pnp.github.io/pnpjs/) is used to interact with SharePoint.  
 
+## Overview
+
+5 HTTP-triggered functions are deployed to show, list, register, process and remove webhooks.  
+When receiving a notification from SharePoint, the service function will add a new item to the list `webhookHistory` (can be changed in environment variable `WebhookHistoryListTitle`). It will also record the event in Application Insights.
+
 ## Security of the Azure resources
 
 The resources deployed in Azure are configured with a high level of security: 
 - The functions service connects to the storage account and the key vault using a private endpoint.
 - No network access is allowed on the storage account and the key vault, except on specified IPs (configurable).
 - Authorization is configured using the functions service's managed identity (no access key or legacy access policy is enabled).
+- All the functions require a key to be called.
 
 ## Prerequisites
 
@@ -73,7 +79,7 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
-   Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure, while provisioning the resources using `azd`).
+   Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure).
 
 1. Install the dependencies and build the functions app:
 
@@ -123,16 +129,18 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 `DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the functions service, or a user-assigned managed identity.  
 This tutorial will assume that the system-assigned managed identity is used.
 
-### Grant SharePoint API permission Sites.Selected to the managed identity
+### Grant the SharePoint API permission Sites.Selected to the managed identity
 
 Navigate to the [function apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your app > Identity. Note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
 Then, use one of the scripts below to grant it the app-only permission `Sites.Selected` on the SharePoint API:
 
 <details>
-  <summary>Using Microsoft Graph PowerShell</summary>
+  <summary>Using the Microsoft Graph PowerShell SDK</summary>
 
 ```powershell
+# This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with the cmdlet Install-Module below:
+# Install-Module Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns -Scope CurrentUser -Repository PSGallery -Force
 Connect-MgGraph -Scope "Application.Read.All", "AppRoleAssignment.ReadWrite.All"
 $managedIdentityObjectId = "d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
 $scopeName = "Sites.Selected"
@@ -162,7 +170,7 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 
 </details>
 
-### Grant effective permission on a SharePoint site to the managed identity
+### Grant the managed identity effective access to a SharePoint site
 
 Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
@@ -171,6 +179,9 @@ In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.
 > In this step, we will use the `Application ID` of the managed identity, while in the previous step we used its `Object ID`, be mindful about the risk of confusion.
 
 Then, use one of the scripts below to grant it the app-only permission `manage` on a specific SharePoint site:
+
+> [!IMPORTANT]  
+> The managed identity of the functions service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
 
 <details>
   <summary>Using PnP PowerShell</summary>
@@ -198,7 +209,9 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 </details>
 
 > [!IMPORTANT]  
-> `manage` is the minimum permission required to register a webhook.
+> The app registration used to run those commands must have at least the following permissions:
+> - Delegated permission `Application.ReadWrite.All` in the Graph API
+> - Delegated permission `AllSites.FullControl` in the SharePoint API
 
 ## Call the functions
 
@@ -262,3 +275,7 @@ traces
 ## Known issues
 
 Azure Functions Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations).
+
+## Cleanup the resources in Azure
+
+You can delete all the resources this project created in Azure, by running the command `azd down`.
