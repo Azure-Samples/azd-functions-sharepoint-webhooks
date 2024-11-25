@@ -235,18 +235,18 @@ notificationUrl="https://${funchost}.azurewebsites.net/api/webhooks/service?code
 listTitle="YOUR_SHAREPOINT_LIST"
 
 # List all webhooks on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhooks/list?code=${code}&listTitle=${listTitle}"
+curl "https://${funchost}.azurewebsites.net/api/webhooks/list?code=${code}&listTitle=${listTitle}"
 
 # Register a webhook
-curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhooks/register?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+curl -X POST "https://${funchost}.azurewebsites.net/api/webhooks/register?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Show this webhook registered on a list
-curl --location "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+curl "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
 # You can get the webhook id in the output of the function /webhooks/show above
 webhookId="5964efeb-c797-4b2d-a911-c676b942511f"
-curl -X POST --location "https://${funchost}.azurewebsites.net/api/webhooks/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
+curl -X POST "https://${funchost}.azurewebsites.net/api/webhooks/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
 
 ## Review the logs
