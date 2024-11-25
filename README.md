@@ -128,7 +128,7 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 `DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the functions service, or a user-assigned managed identity.  
 This tutorial will assume that the system-assigned managed identity is used.
 
-### Grant SharePoint API permission Sites.Selected to the managed identity
+### Grant the SharePoint API permission Sites.Selected to the managed identity
 
 Navigate to the [function apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your app > Identity. Note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
@@ -169,7 +169,7 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 
 </details>
 
-### Grant effective permission on a SharePoint site to the managed identity
+### Grant the managed identity effective access to a SharePoint site
 
 Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
