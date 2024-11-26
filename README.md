@@ -244,7 +244,7 @@ curl -X POST "https://${funchost}.azurewebsites.net/api/webhooks/register?code=$
 curl "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# Step 1: Get the webhook id in the output of the function /webhooks/show above
+# Step 1: Get the webhook id in the output of the function /webhooks/show
 webhookId=$(curl -s "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
     python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
 # Step 2: Call function /webhooks/remove and pass the webhookId
@@ -270,7 +270,7 @@ curl -X POST "http://localhost:7071/api/webhooks/register?listTitle=${listTitle}
 curl "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# Step 1: Get the webhook id in the output of the function /webhooks/show above
+# Step 1: Get the webhook id in the output of the function /webhooks/show
 webhookId=$(curl -s "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
     python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
 # Step 2: Call function /webhooks/remove and pass the webhookId
@@ -306,4 +306,5 @@ Azure Functions Flex Consumption plan is currently in preview, be aware about it
 
 ## Cleanup the resources in Azure
 
-You can delete all the resources this project created in Azure, by running the command `azd down`.
+You can delete all the resources this project created in Azure, by running the command `azd down`.  
+Alternatively, you can delete the resource group, which has the azd environment's name by default.
