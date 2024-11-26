@@ -108,7 +108,7 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
         if (!notificationUrl) { return { status: 400, body: `Required parameters are missing.` }; }
 
         const webhooksResponse = await listWehhooks(request, context);
-        if (!webhooksResponse || !webhooksResponse.jsonBody) { return { status: 200, body: `No webhook was found in the list.` }; }
+        if (!webhooksResponse || !webhooksResponse.jsonBody) { return { status: 200, jsonBody: {} }; }
         if (webhooksResponse.status !== 200) { return webhooksResponse; }
         const webhooks: ISubscriptionResponse[] = webhooksResponse.jsonBody;
         const webhook = webhooks.find((element) => element.notificationUrl === notificationUrl);
