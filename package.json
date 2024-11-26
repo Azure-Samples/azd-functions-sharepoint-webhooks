@@ -1,6 +1,6 @@
 {
   "name": "functions-quickstart-spo-azd",
-  "version": "1.0.0.rc-5",
+  "version": "1.0.0.rc-6",
   "author": {
     "name": "Yvan Duhamel"
   },
@@ -30,6 +30,6 @@
     "@types/node": "^22.9.1",
     "azure-functions-core-tools": "^4.0.6610",
     "rimraf": "^6.0.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }

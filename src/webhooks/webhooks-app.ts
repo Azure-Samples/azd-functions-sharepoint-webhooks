@@ -29,7 +29,7 @@ export async function registerWebhook(request: HttpRequest, context: InvocationC
             return { status: 400, body: message };
         }
         Logger.log({ data: context, message: `Attempted to register webhook "${notificationUrl}" to list "${listTitle}" with expiry date "${expiryDate.toISOString()}". Result: ${JSON.stringify(result)}`, level: LogLevel.Info });
-        return { body: JSON.stringify(result) };
+        return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
@@ -42,7 +42,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         const validationtoken = request.query.get('validationtoken');
         if (validationtoken) {
             Logger.log({ data: context, message: `Validated webhook registration with validation token: ${validationtoken}`, level: LogLevel.Info });
-            return { headers: { 'Content-Type': 'text/plain' }, body: validationtoken };
+            return { status: 200, headers: { 'Content-Type': 'text/plain' }, body: validationtoken };
         }
 
         const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
@@ -55,7 +55,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle));
         if (error) {
             await handleError(error, context, `Could not ensure that list "${CommonConfig.WebhookHistoryListTitle}" exists: `);
-            return { body: '' };
+            return { status: 400, body: '' };
         }
         if (webhookHistoryListEnsureResult.created === true) {
             let message = `List "${CommonConfig.WebhookHistoryListTitle}" (to log the webhook notifications) did not exist and was just created.`;
@@ -67,10 +67,10 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         }));
         if (error) {
             await handleError(error, context, `Could not add an item to the list "${CommonConfig.WebhookHistoryListTitle}": `);
-            return { body: '' };
+            return { status: 400, body: '' };
         }
 
-        return { body: '' };
+        return { status: 200, body: '' };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
@@ -94,7 +94,7 @@ export async function listWehhooks(request: HttpRequest, context: InvocationCont
             return { status: 400, body: await handleError(error, context, `Could not list webhook for web "${sharePointSite.siteRelativePath}" and list "${listTitle}"`) };
         }
         Logger.log({ data: context, message: `Webhooks registered on web "${sharePointSite.siteRelativePath}" and list "${listTitle}": ${JSON.stringify(result)}`, level: LogLevel.Info });
-        return { body: `{ "webhooks": ${JSON.stringify(result)} }` };
+        return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
@@ -107,12 +107,12 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
         const notificationUrl = request.query.get('notificationUrl');
         if (!notificationUrl) { return { status: 400, body: `Required parameters are missing.` }; }
 
-        const webhooks = await listWehhooks(request, context);
-        if (!webhooks || !webhooks.body) { return { status: 200, body: `No webhook found.` }; }
-        const webhooksBody = JSON.parse(webhooks.body.toString());
-        const webhooksJson: ISubscriptionResponse[] = webhooksBody.webhooks;
-        const webhook = webhooksJson.find((element) => element.notificationUrl === notificationUrl);
-        return { body: JSON.stringify(webhook) };
+        const webhooksResponse = await listWehhooks(request, context);
+        if (!webhooksResponse || !webhooksResponse.jsonBody) { return { status: 200, jsonBody: {} }; }
+        if (webhooksResponse.status !== 200) { return webhooksResponse; }
+        const webhooks: ISubscriptionResponse[] = webhooksResponse.jsonBody;
+        const webhook = webhooks.find((element) => element.notificationUrl === notificationUrl);
+        return { status: 200, jsonBody: webhook ? webhook : {} };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
