@@ -29,7 +29,7 @@ export async function registerWebhook(request: HttpRequest, context: InvocationC
             return { status: 400, body: message };
         }
         Logger.log({ data: context, message: `Attempted to register webhook "${notificationUrl}" to list "${listTitle}" with expiry date "${expiryDate.toISOString()}". Result: ${JSON.stringify(result)}`, level: LogLevel.Info });
-        return { status: 200, body: JSON.stringify(result) };
+        return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
@@ -112,7 +112,7 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
         if (webhooksResponse.status !== 200) { return webhooksResponse; }
         const webhooks: ISubscriptionResponse[] = webhooksResponse.jsonBody;
         const webhook = webhooks.find((element) => element.notificationUrl === notificationUrl);
-        return { status: 200, jsonBody: webhook ? webhook : "{}" };
+        return { status: 200, jsonBody: webhook ? webhook : {} };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
