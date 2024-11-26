@@ -246,12 +246,12 @@ curl "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listT
 # Remove the webhook from the list
 # Step 1: Get the webhook id in the output of the function /webhooks/show above
 webhookId=$(curl -s "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
-    python3 -c "import sys, json; document = json.load(sys.stdin); print(document['id']) if document else print('')")
+    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
 # Step 2: Call function /webhooks/remove and pass the webhookId
 curl -X POST "https://${funchost}.azurewebsites.net/api/webhooks/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
 
-This Bash script calls the functions when they run in your local environment
+The same script, which calls the functions when they run in your local environment:
 
 ```bash
 # Edit those variables to fit your app function
@@ -272,7 +272,7 @@ curl "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificatio
 # Remove the webhook from the list
 # Step 1: Get the webhook id in the output of the function /webhooks/show above
 webhookId=$(curl -s "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
-    python3 -c "import sys, json; document = json.load(sys.stdin); print(document['id']) if document else print('')")
+    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
 # Step 2: Call function /webhooks/remove and pass the webhookId
 curl -X POST "http://localhost:7071/api/webhooks/remove?listTitle=${listTitle}&webhookId=${webhookId}"
 ```
