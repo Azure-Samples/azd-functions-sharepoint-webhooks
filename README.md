@@ -77,7 +77,7 @@ You can initialize a project from this `azd` template in one of these ways:
    }
    ```
 
-1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
+1. Review the file `infra/main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
    Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure).
 
@@ -260,7 +260,7 @@ code="YOUR_HOST_KEY"
 notificationUrl="https://${funchost}.azurewebsites.net/api/webhooks/service?code=${code}"
 listTitle="YOUR_SHAREPOINT_LIST"
 
-# List all webhooks on a list
+# List all the webhooks registered on a list
 curl "http://localhost:7071/api/webhooks/list?listTitle=${listTitle}"
 
 # Register a webhook
