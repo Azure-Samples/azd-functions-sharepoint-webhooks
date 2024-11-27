@@ -37,7 +37,7 @@ The resources deployed in Azure are configured with a high level of security:
 + [Node.js 20](https://www.nodejs.org/)
 + [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?pivots=programming-language-typescript#install-the-azure-functions-core-tools)
 + [Azure Developer CLI (AZD)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
-+ Be `Owner` of the subscription (or have [`Role Based Access Control Administrator`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator)), to assign Azure RBAC roles to the managed identity when provisioning the resources in Azure
++ Be `Owner` of the subscription (or have [`Role Based Access Control Administrator`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator)), to successfully assign Azure RBAC roles to the managed identity, as part of the provisioning process
 + To use Visual Studio Code to run and debug locally:
   + [Visual Studio Code](https://code.visualstudio.com/)
   + [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions)
