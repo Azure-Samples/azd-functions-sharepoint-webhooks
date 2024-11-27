@@ -8,7 +8,7 @@ import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
 import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { handleError } from "../utils/loggingHandler.js";
-import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
+import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
@@ -22,11 +22,10 @@ export async function registerWebhook(request: HttpRequest, context: InvocationC
         const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
         const sp = getSPFI(sharePointSite);
         const expiryDate: Date = dateAdd(new Date(), "day", 180) as Date; // Set the expiry date to 180 days from now, which is the maximum allowed for the webhook expiry date.
-        let message: string, result: any, error: any;
+        let result: any, error: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions.add(notificationUrl, expiryDate.toISOString()));
         if (error) {
-            message = await handleError(error, context, `Could not register webhook "${notificationUrl}" in list "${listTitle}": `);
-            return { status: 400, body: message };
+            return { status: 400, jsonBody: { status: 'error', message: await handleError(error, context, `Could not register webhook "${notificationUrl}" in list "${listTitle}": `) } };
         }
         Logger.log({ data: context, message: `Attempted to register webhook "${notificationUrl}" to list "${listTitle}" with expiry date "${expiryDate.toISOString()}". Result: ${JSON.stringify(result)}`, level: LogLevel.Info });
         return { status: 200, jsonBody: result };
@@ -74,7 +73,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, body: errMessage };
+        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
     }
 };
 
@@ -91,14 +90,14 @@ export async function listWehhooks(request: HttpRequest, context: InvocationCont
         let result: any, error: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions());
         if (error) {
-            return { status: 400, body: await handleError(error, context, `Could not list webhook for web "${sharePointSite.siteRelativePath}" and list "${listTitle}"`) };
+            return { status: 400, jsonBody: { status: 'error', message: await handleError(error, context, `Could not list webhook for web "${sharePointSite.siteRelativePath}" and list "${listTitle}"`) } };
         }
         Logger.log({ data: context, message: `Webhooks registered on web "${sharePointSite.siteRelativePath}" and list "${listTitle}": ${JSON.stringify(result)}`, level: LogLevel.Info });
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, body: errMessage };
+        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
     }
 };
 
@@ -116,7 +115,7 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, body: errMessage };
+        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
     }
 };
 
@@ -141,6 +140,6 @@ export async function removeWehhook(request: HttpRequest, context: InvocationCon
     }
     catch (error: unknown) {
         const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, body: errMessage };
+        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
     }
 };
