@@ -90,6 +90,9 @@ You can initialize a project from this `azd` template in one of these ways:
 
 1. Provision the resources in Azure and deploy the functions app package by running command `azd up`.
 
+   > [!IMPORTANT]  
+   > During the provisioning, azd assigns Azure RBAC roles to the managed identity (action `Microsoft.Authorization/roleAssignments/write`). For this reason, the user running azd needs to have the built-in role `Owner` at the subscription level (or have the role [`Role Based Access Control Administrator`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator)).
+
 1. The functions can also be run locally by executing command `npm run start`.
 
 # Grant the functions access to SharePoint Online
