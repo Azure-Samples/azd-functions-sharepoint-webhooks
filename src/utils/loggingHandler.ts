@@ -64,47 +64,45 @@ export interface IErrorMessageDocument extends IMessageDocument {
  * @returns document with details about the error
  */
 export async function logError(e: Error | HttpRequestError | unknown, logcontext: InvocationContext, message: string): Promise<IErrorMessageDocument> {
-    let errorResponse: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "" };
-    let level: LogLevel = LogLevel.Error;
-    let errorMessage = "";
-
+    let errorDocument: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "" };
+    let errorDetails = "";
     if (e instanceof Error) {
         if (hOP(e, "isHttpRequestError")) {
-            errorResponse.type = "HttpRequestError";
+            errorDocument.type = "HttpRequestError";
             let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>e).response.json());
             if (jsonResponse) {
-                errorMessage += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+                errorDetails += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
             } else {
-                errorMessage += e.message;
+                errorDetails += e.message;
             }
 
-            errorResponse.httpStatus = (<HttpRequestError>e).status;
-            if (errorResponse.httpStatus === 404) {
-                level = LogLevel.Warning;
+            errorDocument.httpStatus = (<HttpRequestError>e).status;
+            if (errorDocument.httpStatus === 404) {
+                errorDocument.level = LogLevel.Warning;
             }
 
-            const spCorrelationid = (e as HttpRequestError).response.headers.get("sprequestguid");
-            errorResponse.sprequestguid = spCorrelationid || "";
+            const spCorrelationId = (e as HttpRequestError).response.headers.get("sprequestguid");
+            errorDocument.sprequestguid = spCorrelationId || "";
         } else {
-            errorResponse.type = e.name;
-            errorMessage += e.message;
+            errorDocument.type = e.name;
+            errorDetails += e.message;
         }
     } else if (typeof e === "string") {
-        errorResponse.type = "string";
-        errorMessage += e;
+        errorDocument.type = "string";
+        errorDetails += e;
     }
     else {
-        errorResponse.type = "unknown";
-        errorMessage += errorResponse.error;
+        errorDocument.type = "unknown";
+        errorDetails += errorDocument.error;
     }
     
-    errorResponse.error = errorMessage;
+    errorDocument.error = errorDetails;
     Logger.log({
         data: logcontext,
-        level: level,
-        message: JSON.stringify(errorResponse),
+        level: errorDocument.level,
+        message: JSON.stringify(errorDocument),
     });
-    return errorResponse;
+    return errorDocument;
 }
 
 /**
@@ -118,7 +116,7 @@ export function logInfo(logcontext: InvocationContext, message: string, level: L
     const messageResponse: IMessageDocument = { timestamp: new Date().toISOString(), level: level, message: message };
     Logger.log({
         data: logcontext,
-        level: level,
+        level: messageResponse.level,
         message: JSON.stringify(messageResponse),
     });
     return messageResponse;
