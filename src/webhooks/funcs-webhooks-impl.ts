@@ -8,12 +8,12 @@ import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
 import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { handleError } from "../utils/loggingHandler.js";
-import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
+import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
-        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
+        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const listTitle = request.query.get('listTitle');
         const notificationUrl = request.query.get('notificationUrl');
 
@@ -79,8 +79,8 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
 
 export async function listWehhooks(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
-        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
+        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const listTitle = request.query.get('listTitle');
 
         if (!listTitle) { return { status: 400, body: `Required parameters are missing.` }; }
@@ -121,8 +121,8 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
 
 export async function removeWehhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
-        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
+        const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const listTitle = request.query.get('listTitle');
         const webhookId = request.query.get('webhookId');
 

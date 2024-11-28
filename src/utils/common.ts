@@ -3,7 +3,7 @@ import { SharePointSiteInfo } from "./spAuthentication";
 export const CommonConfig = {
     UserAgent: process.env.UserAgent || "functions-quickstart-spo",
     TenantPrefix: process.env.TenantPrefix || "",
-    TenantBaseUrl: `https://${process.env.TenantPrefix}.sharepoint.com` || "",
+    SharePointDomain: process.env.SharePointDomain || "sharepoint.com",
     SiteRelativePath: process.env.SiteRelativePath || "",
     IsLocalEnvironment: process.env.AZURE_FUNCTIONS_ENVIRONMENT === "Development" ? true : false,
     UserAssignedManagedIdentityClientId: process.env.UserAssignedManagedIdentityClientId || undefined,
