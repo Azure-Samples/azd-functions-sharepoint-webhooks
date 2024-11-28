@@ -20,7 +20,7 @@ export async function getAccessToken(request: HttpRequest, context: InvocationCo
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };
@@ -34,13 +34,13 @@ export async function showWeb(request: HttpRequest, context: InvocationContext):
         let result: any, error: any;
         [result, error] = await safeWait(sp.web());
         if (error) {
-            const errorDetails = await logError(error, context, `Could not get web for tenantPrefix '${sharePointSite.tenantPrefix}' and site '${sharePointSite.siteRelativePath}'`);
+            const errorDetails = await logError(context, error, `Could not get web for tenantPrefix '${sharePointSite.tenantPrefix}' and site '${sharePointSite.siteRelativePath}'`);
             return { status: 400, jsonBody: errorDetails };
         }
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };

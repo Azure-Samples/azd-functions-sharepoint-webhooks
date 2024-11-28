@@ -25,13 +25,13 @@ export async function registerWebhook(request: HttpRequest, context: InvocationC
         let result: any, error: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions.add(notificationUrl, expiryDate.toISOString()));
         if (error) {
-            return { status: 400, jsonBody: await logError(error, context, `Could not register webhook '${notificationUrl}' in list '${listTitle}'`) };
+            return { status: 400, jsonBody: await logError(context, error, `Could not register webhook '${notificationUrl}' in list '${listTitle}'`) };
         }
         logInfo(context, `Attempted to register webhook '${notificationUrl}' to list '${listTitle}' with expiry date '${expiryDate.toISOString()}'. Result: ${JSON.stringify(result)}`);
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };
@@ -52,7 +52,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
         let webhookHistoryListEnsureResult: IListEnsureResult, error: any;
         [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle));
         if (error) {
-            await logError(error, context, `Could not ensure that list '${CommonConfig.WebhookHistoryListTitle}' exists`);
+            await logError(context, error, `Could not ensure that list '${CommonConfig.WebhookHistoryListTitle}' exists`);
             return { status: 400 };
         }
         if (webhookHistoryListEnsureResult.created === true) {
@@ -63,13 +63,13 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
             Title: JSON.stringify(message),
         }));
         if (error) {
-            await logError(error, context, `Could not add an item to the list '${CommonConfig.WebhookHistoryListTitle}'`);
+            await logError(context, error, `Could not add an item to the list '${CommonConfig.WebhookHistoryListTitle}'`);
             return { status: 400 };
         }
         return { status: 200 };
     }
     catch (error: unknown) {
-        await logError(error, context, context.functionName);
+        await logError(context, error, context.functionName);
         return { status: 400 };
     }
 };
@@ -87,13 +87,13 @@ export async function listWehhooks(request: HttpRequest, context: InvocationCont
         let result: any, error: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions());
         if (error) {
-            return { status: 400, jsonBody: await logError(error, context, `Could not list webhook for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`) };
+            return { status: 400, jsonBody: await logError(context, error, `Could not list webhook for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`) };
         }
         logInfo(context, `Webhooks registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}': ${JSON.stringify(result)}`);
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };
@@ -111,7 +111,7 @@ export async function showWehhook(request: HttpRequest, context: InvocationConte
         return { status: 200, jsonBody: webhook ? webhook : {} };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: { status: 'error', message: errorDetails } };
     }
 };
@@ -130,13 +130,13 @@ export async function removeWehhook(request: HttpRequest, context: InvocationCon
         let result: any, error: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(listTitle).subscriptions.getById(webhookId).delete());
         if (error) {
-            return { status: 400, jsonBody: await logError(error, context, `Could not delete webhook '${webhookId}' for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`) };
+            return { status: 400, jsonBody: await logError(context, error, `Could not delete webhook '${webhookId}' for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`) };
         }
         logInfo(context, `Deleted webhook '${webhookId}' registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}'.`);
         return { status: 204 };
     }
     catch (error: unknown) {
-        const errorDetails = await logError(error, context, context.functionName);
+        const errorDetails = await logError(context, error, context.functionName);
         return { status: 400, jsonBody: { status: 'error', message: errorDetails } };
     }
 };

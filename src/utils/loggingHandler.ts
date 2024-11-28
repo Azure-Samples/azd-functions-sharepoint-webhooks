@@ -12,13 +12,16 @@ import { hOP } from "@pnp/core";
 
 // Create a listener to write messages to the logging system
 const listener: ILogListener = FunctionListener((entry: ILogEntry): void => {
-    logMessage(entry);
+    writeEntryToLog(entry);
 });
 Logger.subscribe(listener);
 Logger.activeLogLevel = LogLevel.Verbose;
 
-// Internal function which logs all the messages including the formatted errors, to app insights if possible, and to the console if in local environment
-function logMessage(entry: ILogEntry): void {
+/**
+ * Internal function which writes the entry to the log: application insights if possible, or the console if in local environment
+ * @param entry 
+ */
+function writeEntryToLog(entry: ILogEntry): void {
     let logcontext: InvocationContext = entry.data;
     if (logcontext) {
         switch (entry.level) {
@@ -58,38 +61,38 @@ export interface IErrorMessageDocument extends IMessageDocument {
 
 /**
  * Process the error, record an error message and return a document with details about the error
- * @param e 
+ * @param error 
  * @param logcontext 
  * @param message 
  * @returns document with details about the error
  */
-export async function logError(e: Error | HttpRequestError | unknown, logcontext: InvocationContext, message: string): Promise<IErrorMessageDocument> {
+export async function logError(logcontext: InvocationContext, error: Error | HttpRequestError | unknown, message: string): Promise<IErrorMessageDocument> {
     let errorDocument: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "" };
     let errorDetails = "";
-    if (e instanceof Error) {
-        if (hOP(e, "isHttpRequestError")) {
+    if (error instanceof Error) {
+        if (hOP(error, "isHttpRequestError")) {
             errorDocument.type = "HttpRequestError";
-            let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>e).response.json());
+            let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>error).response.json());
             if (jsonResponse) {
-                errorDetails += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+                errorDetails += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : error.message;
             } else {
-                errorDetails += e.message;
+                errorDetails += error.message;
             }
 
-            errorDocument.httpStatus = (<HttpRequestError>e).status;
+            errorDocument.httpStatus = (<HttpRequestError>error).status;
             if (errorDocument.httpStatus === 404) {
                 errorDocument.level = LogLevel.Warning;
             }
 
-            const spCorrelationId = (e as HttpRequestError).response.headers.get("sprequestguid");
+            const spCorrelationId = (error as HttpRequestError).response.headers.get("sprequestguid");
             errorDocument.sprequestguid = spCorrelationId || "";
         } else {
-            errorDocument.type = e.name;
-            errorDetails += e.message;
+            errorDocument.type = error.name;
+            errorDetails += error.message;
         }
-    } else if (typeof e === "string") {
+    } else if (typeof error === "string") {
         errorDocument.type = "string";
-        errorDetails += e;
+        errorDetails += error;
     }
     else {
         errorDocument.type = "unknown";
