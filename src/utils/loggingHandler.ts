@@ -43,70 +43,83 @@ function logMessage(entry: ILogEntry): void {
     }
 }
 
-export interface IErrorDetails {
+export interface IMessageDocument {
     timestamp: string;
-    status: string;
-    errorMessage: string;
-    contextMessage?: string;
+    level: LogLevel;
+    message: string;
+}
+
+export interface IErrorMessageDocument extends IMessageDocument {
+    error: string;
     type: string;
     sprequestguid?: string;
     httpStatus?: number;
 }
 
 /**
- * Handles the error and logs it
+ * Process the error, record an error message and return a document with details about the error
  * @param e 
- * @param contextMessage 
- * @returns formatted error message
+ * @param logcontext 
+ * @param message 
+ * @returns document with details about the error
  */
-export async function handleError(e: Error | HttpRequestError | unknown, logcontext: InvocationContext, contextMessage?: string): Promise<IErrorDetails> {
-    let errorDetails: IErrorDetails = { timestamp: new Date().toISOString(), status: "error", errorMessage: "", type: "", contextMessage: contextMessage };
+export async function logError(e: Error | HttpRequestError | unknown, logcontext: InvocationContext, message: string): Promise<IErrorMessageDocument> {
+    let errorResponse: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "" };
     let level: LogLevel = LogLevel.Error;
-    let message = "";
+    let errorMessage = "";
 
     if (e instanceof Error) {
         if (hOP(e, "isHttpRequestError")) {
-            errorDetails.type = "HttpRequestError";
+            errorResponse.type = "HttpRequestError";
             let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>e).response.json());
             if (jsonResponse) {
-                message += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+                errorMessage += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
             } else {
-                message += e.message;
+                errorMessage += e.message;
             }
 
-            errorDetails.httpStatus = (<HttpRequestError>e).status;
-            if (errorDetails.httpStatus === 404) {
+            errorResponse.httpStatus = (<HttpRequestError>e).status;
+            if (errorResponse.httpStatus === 404) {
                 level = LogLevel.Warning;
             }
 
             const spCorrelationid = (e as HttpRequestError).response.headers.get("sprequestguid");
-            errorDetails.sprequestguid = spCorrelationid || "";
+            errorResponse.sprequestguid = spCorrelationid || "";
         } else {
-            errorDetails.type = e.name;
-            message += e.message;
+            errorResponse.type = e.name;
+            errorMessage += e.message;
         }
     } else if (typeof e === "string") {
-        errorDetails.type = "string";
-        message += e;
+        errorResponse.type = "string";
+        errorMessage += e;
     }
     else {
-        errorDetails.type = "unknown";
-        message += errorDetails.errorMessage;
+        errorResponse.type = "unknown";
+        errorMessage += errorResponse.error;
     }
     
-    errorDetails.errorMessage = message;
+    errorResponse.error = errorMessage;
     Logger.log({
         data: logcontext,
         level: level,
-        message: JSON.stringify(errorDetails),
+        message: JSON.stringify(errorResponse),
     });
-    return errorDetails;
+    return errorResponse;
 }
 
-export function logInfoMessage(logcontext: InvocationContext, message: string, level: LogLevel = LogLevel.Info): void {
+/**
+ * record the message and return a document with additionnal details
+ * @param logcontext 
+ * @param message 
+ * @param level 
+ * @returns 
+ */
+export function logInfo(logcontext: InvocationContext, message: string, level: LogLevel = LogLevel.Info): IMessageDocument {
+    const messageResponse: IMessageDocument = { timestamp: new Date().toISOString(), level: level, message: message };
     Logger.log({
         data: logcontext,
         level: level,
-        message: message,
+        message: JSON.stringify(messageResponse),
     });
+    return messageResponse;
 }

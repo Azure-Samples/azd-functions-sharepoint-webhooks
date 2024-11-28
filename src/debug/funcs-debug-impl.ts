@@ -4,7 +4,7 @@ import "@pnp/sp/lists/index.js";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
 import { CommonConfig, safeWait } from "../utils/common.js";
-import { handleError } from "../utils/loggingHandler.js";
+import { logError } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
 
 export async function getAccessToken(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -20,7 +20,7 @@ export async function getAccessToken(request: HttpRequest, context: InvocationCo
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await handleError(error, context, context.functionName);
+        const errorDetails = await logError(error, context, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };
@@ -34,13 +34,13 @@ export async function showWeb(request: HttpRequest, context: InvocationContext):
         let result: any, error: any;
         [result, error] = await safeWait(sp.web());
         if (error) {
-            const errorDetails = await handleError(error, context, `Could not get web for tenantPrefix '${sharePointSite.tenantPrefix}' and site '${sharePointSite.siteRelativePath}'`);
+            const errorDetails = await logError(error, context, `Could not get web for tenantPrefix '${sharePointSite.tenantPrefix}' and site '${sharePointSite.siteRelativePath}'`);
             return { status: 400, jsonBody: errorDetails };
         }
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errorDetails = await handleError(error, context, context.functionName);
+        const errorDetails = await logError(error, context, context.functionName);
         return { status: 400, jsonBody: errorDetails };
     }
 };
