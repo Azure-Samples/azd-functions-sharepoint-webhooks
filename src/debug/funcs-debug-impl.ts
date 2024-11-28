@@ -20,8 +20,8 @@ export async function getAccessToken(request: HttpRequest, context: InvocationCo
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
+        const errorDetails = await handleError(error, context, context.functionName);
+        return { status: 400, jsonBody: errorDetails };
     }
 };
 
@@ -34,13 +34,13 @@ export async function showWeb(request: HttpRequest, context: InvocationContext):
         let result: any, error: any;
         [result, error] = await safeWait(sp.web());
         if (error) {
-            const errMessage = await handleError(error, context, `Could not get web for tenantPrefix "${sharePointSite.tenantPrefix}" and site "${sharePointSite.siteRelativePath}"`);
-            return { status: 400, jsonBody: { status: 'error', tenantPrefix: tenantPrefix, UserAssignedManagedIdentityClientId: CommonConfig.UserAssignedManagedIdentityClientId, message: errMessage } };
+            const errorDetails = await handleError(error, context, `Could not get web for tenantPrefix "${sharePointSite.tenantPrefix}" and site "${sharePointSite.siteRelativePath}"`);
+            return { status: 400, jsonBody: errorDetails };
         }
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
-        const errMessage = await handleError(error, context, `Unexpected error whhile executing the function: `);
-        return { status: 400, jsonBody: { status: 'error', message: errMessage } };
+        const errorDetails = await handleError(error, context, context.functionName);
+        return { status: 400, jsonBody: errorDetails };
     }
 };

@@ -91,7 +91,7 @@ export async function getSpAccessToken(tenantPrefix: string): Promise<AccessToke
  * Get the scopes for the SharePoint site, depending on the environment (local or cloud)
  */
 function getScopes(tenantPrefix: string): string[] {
-  const scopes: string[] = [`https://${tenantPrefix}.sharepoint.com/.default`];
+  const scopes: string[] = [`https://${tenantPrefix}.sharepoint-df.com/.default`];
   if (CommonConfig.IsLocalEnvironment) {
     // When code runs locally, DefaultAzureCredential typically via the Azure CLI (which needs delegated permissions on SharePoint app to be able to connect)
     // If scope below is not added, it will connect with only scope "user_impersonation" and SharePoint will deny it

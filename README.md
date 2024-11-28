@@ -291,6 +291,7 @@ The KQL query below shows the messages from all the functions, and filters out t
 traces 
 | where isnotempty(operation_Name)
 | project timestamp, operation_Name, severityLevel, message
+| order by timestamp desc
 ```
 
 The KQL query below shows the messages only from the function `webhooks/service` (which receives the notifications from SharePoint):
@@ -299,6 +300,7 @@ The KQL query below shows the messages only from the function `webhooks/service`
 traces 
 | where operation_Name contains "webhooks-service"
 | project timestamp, operation_Name, severityLevel, message
+| order by timestamp desc
 ```
 
 ## Known issues
