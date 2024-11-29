@@ -67,7 +67,7 @@ export interface IErrorMessageDocument extends IMessageDocument {
  * @returns document with details about the error
  */
 export async function logError(logcontext: InvocationContext, error: Error | HttpRequestError | unknown, message: string): Promise<IErrorMessageDocument> {
-    let errorDocument: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "" };
+    let errorDocument: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "", httpStatus: 500 };
     let errorDetails = "";
     if (error instanceof Error) {
         if (hOP(error, "isHttpRequestError")) {
