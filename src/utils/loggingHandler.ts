@@ -92,11 +92,11 @@ export async function logError(logcontext: InvocationContext, error: Error | Htt
         }
     } else if (typeof error === "string") {
         errorDocument.type = "string";
-        errorDetails += error;
+        errorDetails = error;
     }
     else {
         errorDocument.type = "unknown";
-        errorDetails += errorDocument.error;
+        errorDetails = JSON.stringify(error);
     }
     
     errorDocument.error = errorDetails;
