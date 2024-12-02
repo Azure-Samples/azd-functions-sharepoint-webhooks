@@ -37,6 +37,7 @@ The resources deployed in Azure are configured with a high level of security:
 + [Node.js 20](https://www.nodejs.org/)
 + [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?pivots=programming-language-typescript#install-the-azure-functions-core-tools)
 + [Azure Developer CLI (AZD)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
++ Be `Owner` of the subscription (or have [`Role Based Access Control Administrator`](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator)), to successfully assign Azure RBAC roles to the managed identity, as part of the provisioning process
 + To use Visual Studio Code to run and debug locally:
   + [Visual Studio Code](https://code.visualstudio.com/)
   + [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions)
@@ -77,7 +78,7 @@ You can initialize a project from this `azd` template in one of these ways:
    }
    ```
 
-1. Review the file `infra\main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
+1. Review the file `infra/main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
    Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the functions locally) and `infra\main.parameters.json` (used to set the environment variables in Azure).
 
@@ -246,7 +247,7 @@ curl "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listT
 # Remove the webhook from the list
 # Step 1: Get the webhook id in the output of the function /webhooks/show
 webhookId=$(curl -s "https://${funchost}.azurewebsites.net/api/webhooks/show?code=${code}&listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
-    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
+    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
 # Step 2: Call function /webhooks/remove and pass the webhookId
 curl -X POST "https://${funchost}.azurewebsites.net/api/webhooks/remove?code=${code}&listTitle=${listTitle}&webhookId=${webhookId}"
 ```
@@ -260,7 +261,7 @@ code="YOUR_HOST_KEY"
 notificationUrl="https://${funchost}.azurewebsites.net/api/webhooks/service?code=${code}"
 listTitle="YOUR_SHAREPOINT_LIST"
 
-# List all webhooks on a list
+# List all the webhooks registered on a list
 curl "http://localhost:7071/api/webhooks/list?listTitle=${listTitle}"
 
 # Register a webhook
@@ -272,7 +273,7 @@ curl "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificatio
 # Remove the webhook from the list
 # Step 1: Get the webhook id in the output of the function /webhooks/show
 webhookId=$(curl -s "http://localhost:7071/api/webhooks/show?listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
-    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])"
+    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
 # Step 2: Call function /webhooks/remove and pass the webhookId
 curl -X POST "http://localhost:7071/api/webhooks/remove?listTitle=${listTitle}&webhookId=${webhookId}"
 ```
@@ -284,20 +285,28 @@ When the functions run in Azure, the logging goes to the Application Insights re
 
 ### KQL queries for Application Insights
 
-The KQL query below shows the messages from all the functions, and filters out the logging from the infrastructure:
+The KQL query below shows the entries from all the functions, and filters out the logging from the infrastructure:
 
 ```kql
 traces 
 | where isnotempty(operation_Name)
 | project timestamp, operation_Name, severityLevel, message
+| order by timestamp desc
 ```
 
-The KQL query below shows the messages only from the function `webhooks/service` (which receives the notifications from SharePoint):
+The KQL query below does the following:
+
+- Includes only the entries from the function `webhooks/service` (which receives the notifications from SharePoint)
+- Parses the `message` as a json document (which is how this project writes the messages)
+- Includes only the entries that were successfully parsed (excludes those from the infrastructure)
 
 ```kql
 traces 
 | where operation_Name contains "webhooks-service"
-| project timestamp, operation_Name, severityLevel, message
+| extend jsonMessage = parse_json(message)
+| where isnotempty(jsonMessage.['message'])
+| project timestamp, operation_Name, severityLevel, jsonMessage.['message'], jsonMessage.['error']
+| order by timestamp desc
 ```
 
 ## Known issues

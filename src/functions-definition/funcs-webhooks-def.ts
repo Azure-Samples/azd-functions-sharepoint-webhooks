@@ -1,5 +1,5 @@
 import { app } from "@azure/functions";
-import { registerWebhook, listWehhooks, wehhookService, removeWehhook, showWehhook } from "../webhooks/webhooks-app.js"
+import { registerWebhook, listWehhooks, wehhookService, removeWehhook, showWehhook } from "../webhooks/funcs-webhooks-impl.js"
 
 app.http('webhooks-register', { methods: ['POST'], authLevel: 'function', handler: registerWebhook, route: 'webhooks/register' });
 app.http('webhooks-service', { methods: ['POST'], authLevel: 'function', handler: wehhookService, route: 'webhooks/service' });
