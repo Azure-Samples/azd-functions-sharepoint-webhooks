@@ -12,13 +12,16 @@ import { hOP } from "@pnp/core";
 
 // Create a listener to write messages to the logging system
 const listener: ILogListener = FunctionListener((entry: ILogEntry): void => {
-    logMessage(entry);
+    writeEntryToLog(entry);
 });
 Logger.subscribe(listener);
 Logger.activeLogLevel = LogLevel.Verbose;
 
-// Internal function which logs all the messages including the formatted errors, to app insights if possible, and to the console if in local environment
-function logMessage(entry: ILogEntry): void {
+/**
+ * Internal function which writes the entry to the log: application insights if possible, or the console if in local environment
+ * @param entry 
+ */
+function writeEntryToLog(entry: ILogEntry): void {
     let logcontext: InvocationContext = entry.data;
     if (logcontext) {
         switch (entry.level) {
@@ -43,41 +46,81 @@ function logMessage(entry: ILogEntry): void {
     }
 }
 
-/**
- * Handles the error and logs it
- * @param e 
- * @param currentOperationDetails 
- * @returns formatted error message
- */
-export async function handleError(e: Error | HttpRequestError | unknown, logcontext: InvocationContext, currentOperationDetails?: string): Promise<string> {
-    let message = currentOperationDetails ? `${currentOperationDetails}: ` : "";
-    let level: LogLevel = LogLevel.Error;
+export interface IMessageDocument {
+    timestamp: string;
+    level: LogLevel;
+    message: string;
+}
 
-    if (e instanceof Error) {
-        if (hOP(e, "isHttpRequestError")) {
-            let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>e).response.json());
+export interface IErrorMessageDocument extends IMessageDocument {
+    error: string;
+    type: string;
+    sprequestguid?: string;
+    httpStatus?: number;
+}
+
+/**
+ * Process the error, record an error message and return a document with details about the error
+ * @param error 
+ * @param logcontext 
+ * @param message 
+ * @returns document with details about the error
+ */
+export async function logError(logcontext: InvocationContext, error: Error | HttpRequestError | unknown, message: string): Promise<IErrorMessageDocument> {
+    let errorDocument: IErrorMessageDocument = { timestamp: new Date().toISOString(), level: LogLevel.Error, message: message, error: "", type: "", httpStatus: 500 };
+    let errorDetails = "";
+    if (error instanceof Error) {
+        if (hOP(error, "isHttpRequestError")) {
+            errorDocument.type = "HttpRequestError";
+            let [jsonResponse, awaiterror] = await safeWait((<HttpRequestError>error).response.json());
             if (jsonResponse) {
-                message += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : e.message;
+                errorDetails += typeof jsonResponse["odata.error"] === "object" ? jsonResponse["odata.error"].message.value : error.message;
             } else {
-                message += e.message;
+                errorDetails += error.message;
             }
-            if ((<HttpRequestError>e).status === 404) {
-                level = LogLevel.Warning;
+
+            errorDocument.httpStatus = (<HttpRequestError>error).status;
+            if (errorDocument.httpStatus === 404) {
+                errorDocument.level = LogLevel.Warning;
             }
+
+            const spCorrelationId = (error as HttpRequestError).response.headers.get("sprequestguid");
+            errorDocument.sprequestguid = spCorrelationId || "";
         } else {
-            message += e.message;
+            errorDocument.type = error.name;
+            errorDetails += error.message;
         }
-    } else if (typeof e === "string") {
-        message += e;
+    } else if (typeof error === "string") {
+        errorDocument.type = "string";
+        errorDetails = error;
     }
     else {
-        message += JSON.stringify(e);
+        errorDocument.type = "unknown";
+        errorDetails = JSON.stringify(error);
     }
-
+    
+    errorDocument.error = errorDetails;
     Logger.log({
         data: logcontext,
-        level: level,
-        message: message,
+        level: errorDocument.level,
+        message: JSON.stringify(errorDocument),
     });
-    return message;
+    return errorDocument;
+}
+
+/**
+ * record the message and return a document with additionnal details
+ * @param logcontext 
+ * @param message 
+ * @param level 
+ * @returns 
+ */
+export function logInfo(logcontext: InvocationContext, message: string, level: LogLevel = LogLevel.Info): IMessageDocument {
+    const messageResponse: IMessageDocument = { timestamp: new Date().toISOString(), level: level, message: message };
+    Logger.log({
+        data: logcontext,
+        level: messageResponse.level,
+        message: JSON.stringify(messageResponse),
+    });
+    return messageResponse;
 }

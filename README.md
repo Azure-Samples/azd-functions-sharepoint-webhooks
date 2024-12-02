@@ -285,20 +285,28 @@ When the functions run in Azure, the logging goes to the Application Insights re
 
 ### KQL queries for Application Insights
 
-The KQL query below shows the messages from all the functions, and filters out the logging from the infrastructure:
+The KQL query below shows the entries from all the functions, and filters out the logging from the infrastructure:
 
 ```kql
 traces 
 | where isnotempty(operation_Name)
 | project timestamp, operation_Name, severityLevel, message
+| order by timestamp desc
 ```
 
-The KQL query below shows the messages only from the function `webhooks/service` (which receives the notifications from SharePoint):
+The KQL query below does the following:
+
+- Includes only the entries from the function `webhooks/service` (which receives the notifications from SharePoint)
+- Parses the `message` as a json document (which is how this project writes the messages)
+- Includes only the entries that were successfully parsed (excludes those from the infrastructure)
 
 ```kql
 traces 
 | where operation_Name contains "webhooks-service"
-| project timestamp, operation_Name, severityLevel, message
+| extend jsonMessage = parse_json(message)
+| where isnotempty(jsonMessage.['message'])
+| project timestamp, operation_Name, severityLevel, jsonMessage.['message'], jsonMessage.['error']
+| order by timestamp desc
 ```
 
 ## Known issues

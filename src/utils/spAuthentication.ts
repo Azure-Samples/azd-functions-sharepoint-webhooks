@@ -5,7 +5,7 @@ import { NodeFetchWithRetry } from "@pnp/nodejs";
 import { SPDefault } from "@pnp/nodejs/index.js";
 import { DefaultParse, InjectHeaders, Queryable } from "@pnp/queryable";
 import { SPFI, spfi } from "@pnp/sp";
-import { AccessToken, AzureCliCredential, AzureDeveloperCliCredential, DefaultAzureCredential } from "@azure/identity";
+import { AccessToken, AzureCliCredential, AzureDeveloperCliCredential, DefaultAzureCredential, ManagedIdentityCredential, ManagedIdentityCredentialClientIdOptions } from "@azure/identity";
 import { AzureIdentity, ValidCredential } from "@pnp/azidjsclient";
 import { DefaultHeaders } from "@pnp/sp";
 import { CommonConfig } from "./common.js";
@@ -64,7 +64,7 @@ export function getSPFI(spSite: SharePointSiteInfo): SPFI {
  */
 function initSPFI(spSite: SharePointSiteInfo): SharePointSiteConnection {
   const credential = getAzureCredential();
-  const baseUrl: string = `https://${spSite.tenantPrefix}.sharepoint.com${spSite.siteRelativePath}`;
+  const baseUrl: string = `https://${spSite.tenantPrefix}.${CommonConfig.SharePointDomain}${spSite.siteRelativePath}`;
   const scopes: string[] = getScopes(spSite.tenantPrefix);
   const spConnection: SPFI = spfi(baseUrl).using(
     CustomConnection(),
@@ -120,6 +120,19 @@ function withDefaultAzureCredential(): ValidCredential {
     //   },
     // }
   );
+  return credential;
+}
+
+function withManagedIdentityCredential(): ValidCredential {
+  const options: ManagedIdentityCredentialClientIdOptions = {
+    // if the identity is a system-assigned identity, clientId is not needed
+    clientId: CommonConfig.UserAssignedManagedIdentityClientId,
+    // loggingOptions: {
+    //   allowLoggingAccountIdentifiers: true,
+    //   enableUnsafeSupportLogging: true,
+    // },
+  }
+  const credential = new ManagedIdentityCredential(options);
   return credential;
 }
 
