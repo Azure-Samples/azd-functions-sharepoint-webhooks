@@ -25,7 +25,7 @@ export async function getAccessToken(request: HttpRequest, context: InvocationCo
     }
 };
 
-export async function showWeb(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function getWeb(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
         const siteRelativePath = request.query.get('siteRelativePath') || undefined;
