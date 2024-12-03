@@ -86,6 +86,12 @@ export async function logError(logcontext: InvocationContext, error: Error | Htt
 
             const spCorrelationId = (error as HttpRequestError).response.headers.get("sprequestguid");
             errorDocument.sprequestguid = spCorrelationId || "";
+        } else if (error instanceof AggregateError) {
+            errorDocument.type = error.name;
+            errorDetails += `AggregateError with ${error.errors.length} errors: `;
+            for (let i = 0; i < error.errors.length; i++) {
+                errorDetails += `Error ${i}: ${error.errors[i].name}: ${error.errors[i].message}. `;
+            }
         } else {
             errorDocument.type = error.name;
             errorDetails += error.message;
@@ -98,7 +104,7 @@ export async function logError(logcontext: InvocationContext, error: Error | Htt
         errorDocument.type = "unknown";
         errorDetails = JSON.stringify(error);
     }
-    
+
     errorDocument.error = errorDetails;
     Logger.log({
         data: logcontext,
