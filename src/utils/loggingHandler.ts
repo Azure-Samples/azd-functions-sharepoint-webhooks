@@ -121,7 +121,7 @@ export async function logError(logcontext: InvocationContext, error: Error | Htt
  * @param level 
  * @returns 
  */
-export function logInfo(logcontext: InvocationContext, message: string, level: LogLevel = LogLevel.Info): IMessageDocument {
+export function logMessage(logcontext: InvocationContext, message: string, level: LogLevel = LogLevel.Info): IMessageDocument {
     const messageResponse: IMessageDocument = { timestamp: new Date().toISOString(), level: level, message: message };
     Logger.log({
         data: logcontext,

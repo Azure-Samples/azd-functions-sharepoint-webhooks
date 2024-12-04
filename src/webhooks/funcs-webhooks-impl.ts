@@ -6,7 +6,7 @@ import { IListEnsureResult } from "@pnp/sp/lists/types.js";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
 import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
-import { logError, logInfo } from "../utils/loggingHandler.js";
+import { logError, logMessage } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
 export async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
@@ -27,7 +27,7 @@ export async function registerWebhook(request: HttpRequest, context: InvocationC
             const errorDetails = await logError(context, error, `Could not register webhook '${notificationUrl}' in list '${listTitle}'`);
             return { status: errorDetails.httpStatus, jsonBody: errorDetails };
         }
-        logInfo(context, `Attempted to register webhook '${notificationUrl}' to list '${listTitle}' with expiry date '${expiryDate.toISOString()}'. Result: ${JSON.stringify(result)}`);
+        logMessage(context, `Attempted to register webhook '${notificationUrl}' to list '${listTitle}' with expiry date '${expiryDate.toISOString()}'. Result: ${JSON.stringify(result)}`);
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
@@ -40,12 +40,12 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
     try {
         const validationtoken = request.query.get('validationtoken');
         if (validationtoken) {
-            logInfo(context, `Validated webhook registration with validation token: ${validationtoken}`);
+            logMessage(context, `Validated webhook registration with validation token: ${validationtoken}`);
             return { status: 200, headers: { 'Content-Type': 'text/plain' }, body: validationtoken };
         }
 
         const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
-        const message = logInfo(context, `Received webhook notification: ${body.value.length} event(s) for resource '${body.value[0].resource}' on site '${body.value[0].siteUrl}'`);
+        const message = logMessage(context, `Received webhook notification: ${body.value.length} event(s) for resource '${body.value[0].resource}' on site '${body.value[0].siteUrl}'`);
 
         const sharePointSite = getSharePointSiteInfo();
         const sp = getSPFI(sharePointSite);
@@ -56,7 +56,7 @@ export async function wehhookService(request: HttpRequest, context: InvocationCo
             return { status: errorDetails.httpStatus };
         }
         if (webhookHistoryListEnsureResult.created === true) {
-            logInfo(context, `List '${CommonConfig.WebhookHistoryListTitle}' (to log the webhook notifications) did not exist and was just created.`);
+            logMessage(context, `List '${CommonConfig.WebhookHistoryListTitle}' (to log the webhook notifications) did not exist and was just created.`);
         }
         let result: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
@@ -90,7 +90,7 @@ export async function listWehhooks(request: HttpRequest, context: InvocationCont
             const errorDetails = await logError(context, error, `Could not list webhook for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`);
             return { status: errorDetails.httpStatus, jsonBody: errorDetails };
         };
-        logInfo(context, `Webhooks registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}': ${JSON.stringify(result)}`);
+        logMessage(context, `Webhooks registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}': ${JSON.stringify(result)}`);
         return { status: 200, jsonBody: result };
     }
     catch (error: unknown) {
@@ -134,7 +134,7 @@ export async function removeWehhook(request: HttpRequest, context: InvocationCon
             const errorDetails = await logError(context, error, `Could not delete webhook '${webhookId}' for web '${sharePointSite.siteRelativePath}' and list '${listTitle}'`);
             return { status: errorDetails.httpStatus, jsonBody: errorDetails };
         }
-        logInfo(context, `Deleted webhook '${webhookId}' registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}'.`);
+        logMessage(context, `Deleted webhook '${webhookId}' registered on web '${sharePointSite.siteRelativePath}' and list '${listTitle}'.`);
         return { status: 204 };
     }
     catch (error: unknown) {
