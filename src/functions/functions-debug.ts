@@ -1,13 +1,9 @@
-import { HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import "@pnp/sp/items/index.js";
-import "@pnp/sp/lists/index.js";
-import "@pnp/sp/subscriptions/index.js";
-import "@pnp/sp/webs/index.js";
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { CommonConfig, safeWait } from "../utils/common.js";
 import { logError } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
 
-export async function getAccessToken(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+async function getAccessToken(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const tenantPrefix = request.query.get('tenantPrefix') || CommonConfig.TenantPrefix;
     try {
         const token = await getSpAccessToken(tenantPrefix);
@@ -44,3 +40,6 @@ export async function getWeb(request: HttpRequest, context: InvocationContext): 
         return { status: errorDetails.httpStatus, jsonBody: errorDetails };
     }
 };
+
+app.http('debug-getAccessToken', { methods: ['GET'], authLevel: 'admin', handler: getAccessToken, route: 'debug/getAccessToken' });
+app.http('debug-getWeb', { methods: ['GET'], authLevel: 'function', handler: getWeb, route: 'debug/getWeb' });
