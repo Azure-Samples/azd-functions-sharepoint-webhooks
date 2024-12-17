@@ -1,9 +1,10 @@
 name: Deploy Node.js project to Azure Function App
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
+
+permissions:
+  id-token: write
 
 env:
   AZURE_FUNCTIONAPP_NAME: ${{ vars.AZURE_FUNCTIONAPP_NAME }}
