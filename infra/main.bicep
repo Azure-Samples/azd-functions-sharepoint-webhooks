@@ -54,9 +54,6 @@ var tags = { 'azd-env-name': environmentName }
 // Check if allowedIpAddresses is empty or contains only an empty string
 var allowedIpAddressesNoEmptyString = empty(allowedIpAddresses) || (length(allowedIpAddresses) == 1 && contains(allowedIpAddresses, '')) ? [] : allowedIpAddresses
 
-// this is temporary, until Flex is GA, eventually only Flex will be allowed
-var appFunctionType = 'Flex' // @allowed(['Flex', 'Premium'])
-
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: !empty(resourceGroupName) ? resourceGroupName : '${abbrs.resourcesResourceGroups}${environmentName}'
@@ -86,7 +83,6 @@ module serviceVirtualNetwork 'app/vnet.bicep' = {
     location: location
     tags: tags
     vNetName: virtualNetworkName
-    appFunctionType: appFunctionType
   }
 }
 
@@ -103,18 +99,6 @@ module servicePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = {
 }
 
 // The application backend
-var appServiceSku = appFunctionType == 'Premium'
-  ? {
-      name: 'B2'
-      tier: 'Basic'
-      size: 'B2'
-      family: 'B'
-    }
-  : {
-      name: 'FC1'
-      tier: 'FlexConsumption'
-    }
-
 module appServicePlan './core/host/appserviceplan.bicep' = {
   name: 'appserviceplan'
   scope: rg
@@ -122,7 +106,10 @@ module appServicePlan './core/host/appserviceplan.bicep' = {
     name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
     location: location
     tags: tags
-    sku: appServiceSku
+    sku: {
+      name: 'FC1'
+      tier: 'FlexConsumption'
+    }
   }
 }
 
@@ -145,7 +132,6 @@ module api './app/api.bicep' = {
       : ''
     appSettings: appSettings
     virtualNetworkSubnetId: serviceVirtualNetwork.outputs.appSubnetID
-    appFunctionType: appFunctionType
   }
 }
 

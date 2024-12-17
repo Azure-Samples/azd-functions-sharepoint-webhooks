@@ -12,8 +12,6 @@ param identityType string
 @description('User assigned identity name')
 param identityId string
 param httpsOnly bool = true
-@allowed(['Flex', 'Premium'])
-param appFunctionType string = 'Flex'
 
 @allowed(['node'])
 param runtimeName string
@@ -37,13 +35,6 @@ var userAssignedIdentities = identityType == 'UserAssigned'
       type: identityType
     }
 
-var appSettingsPerFunctionType = appFunctionType == 'Premium'
-  ? {
-      FUNCTIONS_WORKER_RUNTIME: runtimeName
-      FUNCTIONS_EXTENSION_VERSION: '~4'
-    }
-  : {}
-
 resource stg 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
   name: storageAccountName
 }
@@ -57,9 +48,7 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: appServicePlanId
     httpsOnly: httpsOnly
-    functionAppConfig: appFunctionType == 'Premium'
-      ? null
-      : {
+    functionAppConfig: {
           deployment: {
             storage: {
               type: 'blobContainer'
@@ -90,7 +79,7 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
 
     siteConfig: {
       keyVaultReferenceIdentity: identityType == 'UserAssigned' ? identityId : 'SystemAssigned'
-      linuxFxVersion: appFunctionType == 'Premium' ? '${runtimeName}|${runtimeVersion}' : null
+      linuxFxVersion: null
       vnetRouteAllEnabled: true // see above
     }
   }
@@ -103,8 +92,7 @@ resource functions 'Microsoft.Web/sites@2023-12-01' = {
         AzureWebJobsStorage__accountName: stg.name
         AzureWebJobsStorage__credential: 'managedidentity'
         APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString
-      },
-      appSettingsPerFunctionType
+      }
     )
   }
 }
