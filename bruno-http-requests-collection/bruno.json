@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "functions-quickstart-spo-azd",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
