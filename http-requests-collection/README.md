@@ -1,0 +1,1 @@
+Open this collection in API debugger [Bruno](https://www.usebruno.com/) to execute the HTTP requests.
