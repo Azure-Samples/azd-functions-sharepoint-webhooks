@@ -1,4 +1,6 @@
-Open this collection with HTTP debugger [Bruno](https://www.usebruno.com/) to execute the HTTP requests.
+# HTTP requests for the Azure function app
+
+Open this collection with HTTP debugger [Bruno](https://www.usebruno.com/) to call your Azure function app and manage your webhooks.
 
 ## Prerequisites
 
