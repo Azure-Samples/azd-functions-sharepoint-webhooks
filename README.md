@@ -89,10 +89,10 @@ Follow the steps below to initialize a local project and deploy the resources in
 
 # Grant the function app access to SharePoint Online
 
-The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app run on your local environment, or in Azure.  
-If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility), before continuing.
+The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app runs in your local environment, or in Azure.  
+If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility).
 
-## Grant the function app access to SharePoint when they run on the local environment
+## When it runs on your local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
 Use the Microsoft Graph PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
@@ -119,16 +119,16 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > `AllSites.Manage` is the minimum permission required to register a webhook.
 > `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
-## Grant the function app access to SharePoint when it runs in Azure
+## When it runs in Azure
 
 `DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the function app service, or a user-assigned managed identity.  
 This tutorial will assume that the system-assigned managed identity is used.
 
 ### Grant the SharePoint API permission Sites.Selected to the managed identity
 
-Navigate to the [function apps in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > Select your app > Identity. Note the `Object (principal) ID` of the system-assigned managed identity.  
+Navigate to your [function app in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
-Then, use one of the scripts below to grant it the app-only permission `Sites.Selected` on the SharePoint API:
+Then, use one of the scripts below to grant this identity the app-only permission `Sites.Selected` on the SharePoint API:
 
 <details>
   <summary>Using the Microsoft Graph PowerShell SDK</summary>
