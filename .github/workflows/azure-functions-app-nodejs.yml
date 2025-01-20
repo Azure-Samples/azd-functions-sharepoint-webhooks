@@ -42,7 +42,7 @@ jobs:
         npm prune --omit=dev # Removes packages specified in devDependencies
         popd
 
-    - name: 'Publish package to Azure Functions app'
+    - name: 'Publish the package to Azure Function app'
       uses: Azure/functions-action@v1
       id: fa
       with:

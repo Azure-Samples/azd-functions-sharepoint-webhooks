@@ -1,0 +1,17 @@
+meta {
+  name: show
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://{{funchost}}.azurewebsites.net/api/webhooks/show?code={{code}}&listTitle={{listTitle}}&notificationUrl={{notificationUrl}}
+  body: none
+  auth: none
+}
+
+params:query {
+  code: {{code}}
+  listTitle: {{listTitle}}
+  notificationUrl: {{notificationUrl}}
+}

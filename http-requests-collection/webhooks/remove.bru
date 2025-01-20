@@ -1,0 +1,17 @@
+meta {
+  name: remove
+  type: http
+  seq: 4
+}
+
+post {
+  url: https://{{funchost}}.azurewebsites.net/api/webhooks/remove?code={{code}}&listTitle={{listTitle}}&webhookId
+  body: none
+  auth: none
+}
+
+params:query {
+  code: {{code}}
+  listTitle: {{listTitle}}
+  webhookId: 
+}

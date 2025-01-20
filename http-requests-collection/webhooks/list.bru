@@ -1,0 +1,16 @@
+meta {
+  name: list
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://{{funchost}}.azurewebsites.net/api/webhooks/list?code={{code}}&listTitle={{listTitle}}
+  body: none
+  auth: none
+}
+
+params:query {
+  code: {{code}}
+  listTitle: {{listTitle}}
+}
