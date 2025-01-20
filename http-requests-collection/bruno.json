@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "functions-quickstart-spo-azd",
+  "name": "azd-functions-sharepoint-webhooks",
   "type": "collection",
   "ignore": [
     "node_modules",
