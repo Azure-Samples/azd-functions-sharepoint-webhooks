@@ -1,5 +1,5 @@
 ---
-name: Azure Function app for SharePoint Online
+name: Azure Function app for SharePoint webhooks
 description: This quickstart uses azd CLI to deploy an Azure Function app that registers and processes SharePoint Online webhooks on your own tenant.
 page_type: sample
 languages:
@@ -13,7 +13,7 @@ products:
 urlFragment: functions-quickstart-spo-azd
 ---
 
-# Azure Function ap for SharePoint Webhooks
+# Azure Function ap for SharePoint webhooks
 
 This quickstart is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app that registers and processes [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
 It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.  
@@ -21,16 +21,16 @@ It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azur
 ## Overview
 
 Multiple HTTP-triggered functions are created to show, list, register, process and remove webhooks on your SharePoint lists and document libraries.  
-When receiving a notification from SharePoint, the service function will add a new item to the list `webhookHistory` (can be changed in environment variable `WebhookHistoryListTitle`), and record the event in Application Insights.
+When receiving a notification from SharePoint, the service function adds an item to the list `webhookHistory` (can be changed in environment variable `WebhookHistoryListTitle`), and records the event in Application Insights.
 
 ## Security of the Azure resources
 
-The resources deployed in Azure are configured with a high level of security: 
+The resources are deployed in Azure with a high level of security:
 
-- The function app connects to the storage account and the key vault using a private endpoint.
-- No public network access is allowed on the storage account and the key vault, except on specified IPs (configurable).
-- Authorization is configured using the functions service's managed identity (no access key or legacy access policy is used).
-- All the functions require a app key to be called.
+- The function app connects to the storage account using a private endpoint.
+- No public network access is allowed on the storage account.
+- All the permissions are granted to the function app's managed identity (no secret, access key or legacy access policy is used).
+- All the functions require an app key to be called.
 
 ## Prerequisites
 
@@ -83,16 +83,19 @@ Follow the steps below to initialize a local project and deploy the resources in
    npm run build
    ```
 
-1. Provision the resources in Azure and deploy the function app package by running command `azd up`.
+## Run the function app
 
-1. The function app can also be run locally by executing command `npm run start`.
+It can run either locally or in Azure:
 
-# Grant the function app access to SharePoint Online
+- To provision the resources in Azure and deploy the function app: Run `azd up`.
+- To run the function app locally: Run `npm run start`.
+
+## Grant the function app access to SharePoint Online
 
 The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app runs in your local environment, or in Azure.  
 If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility).
 
-## When it runs on your local environment
+### When it runs on your local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
 Use the Microsoft Graph PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
@@ -119,12 +122,12 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 > `AllSites.Manage` is the minimum permission required to register a webhook.
 > `Sites.Selected` cannot be used because it does not exist as a delegated permission in the SharePoint API.
 
-## When it runs in Azure
+### When it runs in Azure
 
 `DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the function app service, or a user-assigned managed identity.  
 This tutorial will assume that the system-assigned managed identity is used.
 
-### Grant the SharePoint API permission Sites.Selected to the managed identity
+#### Grant the SharePoint API permission Sites.Selected to the managed identity
 
 Navigate to your [function app in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
@@ -165,7 +168,7 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 
 </details>
 
-### Grant the managed identity effective access to a SharePoint site
+#### Grant the managed identity effective access to a SharePoint site
 
 Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
