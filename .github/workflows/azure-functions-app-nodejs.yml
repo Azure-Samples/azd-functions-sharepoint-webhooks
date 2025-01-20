@@ -1,8 +1,6 @@
 name: Deploy Node.js project to Azure Function App
 
 on:
-  push:
-    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -16,8 +14,8 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
-    environment: dev
+    runs-on: ubuntu-latest
+    environment: prod
     steps:
     - name: 'Checkout repo'
       uses: actions/checkout@v4
