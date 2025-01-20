@@ -13,9 +13,9 @@ products:
 urlFragment: azd-functions-sharepoint-webhooks
 ---
 
-# Azure Function app for SharePoint webhooks
+# Azure function app for SharePoint webhooks
 
-This quickstart is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app that registers and processes [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
+This template is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app that registers and processes [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
 It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.  
 
 ## Overview
