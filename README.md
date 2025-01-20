@@ -13,7 +13,7 @@ products:
 urlFragment: functions-quickstart-spo-azd
 ---
 
-# Azure Function ap for SharePoint webhooks
+# Azure Function app for SharePoint webhooks
 
 This quickstart is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app that registers and processes [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
 It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.  
@@ -21,7 +21,7 @@ It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azur
 ## Overview
 
 Multiple HTTP-triggered functions are created to show, list, register, process and remove webhooks on your SharePoint lists and document libraries.  
-When receiving a notification from SharePoint, the service function adds an item to the list `webhookHistory` (can be changed in environment variable `WebhookHistoryListTitle`), and records the event in Application Insights.
+When receiving a notification from SharePoint, the service function adds an item to the list `webhookHistory` (created if it does not exist), and records the event in Application Insights.
 
 ## Security of the Azure resources
 
@@ -43,13 +43,11 @@ The resources are deployed in Azure with a high level of security:
 The account running `azd` must have at least the following roles to successfully provision the resources:
 
 + Azure role [`Contributor`](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor): To create all the resources needed
-+ Azure role [`Role Based Access Control Administrator`](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator): To assign roles (to access the storage account and Application Insights) to the managed identity of the Azure function
++ Azure role [`Role Based Access Control Administrator`](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator): To assign roles (to access the storage account and Application Insights) to the managed identity of the function app
 
 ## Initialize the project
 
-Follow the steps below to initialize a local project and deploy the resources in Azure:
-
-1. Use this `azd init` command from an empty local (root) folder:
+1. Run `azd init` from an empty local (root) folder:
 
     ```shell
     azd init --template Yvand/functions-quickstart-spo-azd
@@ -58,7 +56,7 @@ Follow the steps below to initialize a local project and deploy the resources in
     Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
 
 
-1. Add a file named `local.settings.json` in the root of your project with the following contents:
+1. Add a file named `local.settings.json` in the root of your project with the following contents, and replace the placeholders with your own values:
 
    ```json
    {
@@ -87,12 +85,12 @@ Follow the steps below to initialize a local project and deploy the resources in
 
 It can run either locally or in Azure:
 
-- To provision the resources in Azure and deploy the function app: Run `azd up`.
 - To run the function app locally: Run `npm run start`.
+- To provision the resources in Azure and deploy the function app: Run `azd up`.
 
 ## Grant the function app access to SharePoint Online
 
-The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app runs in your local environment, or in Azure.  
+The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app runs locally, or in Azure.  
 If you never heard about `DefaultAzureCredential`, you should familirize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility).
 
 ### When it runs on your local environment
@@ -129,7 +127,7 @@ This tutorial will assume that the system-assigned managed identity is used.
 
 #### Grant the SharePoint API permission Sites.Selected to the managed identity
 
-Navigate to your [function app in the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
+Navigate to your function app in [the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
 Then, use one of the scripts below to grant this identity the app-only permission `Sites.Selected` on the SharePoint API:
 
@@ -215,6 +213,10 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 
 For security reasons, when running in Azure, function app requires an app key to pass in query string parameter `code`. The app keys can be found in the function app service > App Keys.  
 Most of the HTTP functions take optional parameters `tenantPrefix` and `siteRelativePath`. If they are not specified, the values set in the app's environment variables will be used.
+
+### Using API debugger Bruno
+
+Review [this README](http-requests-collection/README.md) for more information.
 
 ### Using vscode extension RestClient
 
