@@ -1,12 +1,12 @@
 {
-  "name": "functions-quickstart-spo-azd",
+  "name": "azd-functions-sharepoint-webhooks",
   "version": "1.0.0",
   "author": {
     "name": "Yvan Duhamel"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yvand/functions-quickstart-spo-azd"
+    "url": "https://github.com/Yvand/azd-functions-sharepoint-webhooks"
   },
   "description": "This Quickstart uses Azure Developer command-line (azd) tools to create functions for SharePoint Online",
   "license": "MIT",

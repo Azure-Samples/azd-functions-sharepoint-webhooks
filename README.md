@@ -10,7 +10,7 @@ languages:
 products:
 - azure-functions
 - sharepoint-online
-urlFragment: functions-quickstart-spo-azd
+urlFragment: azd-functions-sharepoint-webhooks
 ---
 
 # Azure Function app for SharePoint webhooks
@@ -50,7 +50,7 @@ The account running `azd` must have at least the following roles to successfully
 1. Run `azd init` from an empty local (root) folder:
 
     ```shell
-    azd init --template Yvand/functions-quickstart-spo-azd
+    azd init --template Yvand/azd-functions-sharepoint-webhooks
     ```
 
     Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.

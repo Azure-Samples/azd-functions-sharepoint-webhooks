@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
-name: functions-quickstart-spo-azd
+name: azd-functions-sharepoint-webhooks
 metadata:
-  template: Yvand/functions-quickstart-spo-azd@1.0.0
+  template: Yvand/azd-functions-sharepoint-webhooks@1.0.0
 services:
   api:
     project: .

@@ -5,7 +5,7 @@ export const CommonConfig = {
     IsLocalEnvironment: process.env.AZURE_FUNCTIONS_ENVIRONMENT === "Development" ? true : false,
     UserAssignedManagedIdentityClientId: process.env.UserAssignedManagedIdentityClientId || undefined,
     WebhookHistoryListTitle: process.env.WebhookHistoryListTitle || "webhookHistory",
-    UserAgent: process.env.UserAgent || "Yvand/functions-quickstart-spo-azd",
+    UserAgent: process.env.UserAgent || "Yvand/azd-functions-sharepoint-webhooks",
 }
 
 // This method awaits on async calls and catches the exception if there is any - https://dev.to/sobiodarlington/better-error-handling-with-async-await-2e5m
