@@ -1,22 +1,26 @@
+<!--
 ---
-name: Azure Function app for SharePoint webhooks
-description: This quickstart uses azd CLI to deploy an Azure Function app that registers and processes SharePoint Online webhooks on your own tenant.
+name: Azure function app for SharePoint webhooks
+description: This quickstart uses azd CLI to deploy an Azure function app which
+  connects to your SharePoint Online tenant to register, process and manage
+  webhooks.
 page_type: sample
 languages:
-- azdeveloper
-- bicep
-- nodejs
-- typescript
+  - azdeveloper
+  - bicep
+  - nodejs
+  - typescript
 products:
-- azure-functions
-- sharepoint-online
+  - azure-functions
+  - sharepoint
 urlFragment: azd-functions-sharepoint-webhooks
 ---
+-->
 
 # Azure function app for SharePoint webhooks
 
-This template is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app that registers and processes [SharePoint Online webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks) on your own tenant.  
-It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.  
+This template is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app which connects to your SharePoint Online tenant to register, process and manage [webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks).  
+It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.
 
 ## Overview
 
@@ -96,7 +100,7 @@ If you never heard about `DefaultAzureCredential`, you should familirize yoursel
 ### When it runs on your local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
-Use the Microsoft Graph PowerShell script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
+Use the [Microsoft Graph PowerShell](https://learn.microsoft.com/en-us/powershell/microsoftgraph/) script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
