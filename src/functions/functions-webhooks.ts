@@ -8,6 +8,7 @@ import "@pnp/sp/webs/index.js";
 import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
 import { logError, logMessage } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
+import { IChangeQuery } from "@pnp/sp";
 
 async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
@@ -45,10 +46,28 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         }
 
         const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
-        const message = logMessage(context, `Received webhook notification: ${body.value.length} event(s) for resource '${body.value[0].resource}' on site '${body.value[0].siteUrl}'`);
 
         const sharePointSite = getSharePointSiteInfo();
         const sp = getSPFI(sharePointSite);
+
+        // build the changeQuery object to get any change since 5 minutes ago
+        const now = new Date();
+        const changeStart = ((now.getTime() * 10000 - 5 * 60_000 * 10000) + 621355968000000000)
+        const webhookListId = body.value[0].resource;
+        const changeTokenStart = `1;3;${webhookListId};${changeStart};-1`;
+        const changeQuery: IChangeQuery = {
+            ChangeTokenStart: { StringValue: changeTokenStart },
+            // ChangeTokenStart: undefined,
+            ChangeTokenEnd: undefined,
+            Add: true,
+            DeleteObject: true,
+            Rename: true,
+            Restore: true,
+            Item: true,
+        };
+        const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
+        const message = logMessage(context, `${changes.length} change(s) happened on the list '${body.value[0].resource}' in the last 5 minutes.`);
+
         let webhookHistoryListEnsureResult: IListEnsureResult, error: any;
         [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle));
         if (error) {
