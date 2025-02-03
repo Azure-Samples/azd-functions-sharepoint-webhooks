@@ -27,9 +27,9 @@ export const GetChangeTokenTicks = (minutesFromNow: number) => {
 }
 
 export enum WebhookChangeType {
-    Added = 1,
-    Updated = 2,
-    Deleted = 3,
+    Add = 1,
+    Update = 2,
+    Delete = 3,
 }
 
 export interface ISubscriptionResponse {

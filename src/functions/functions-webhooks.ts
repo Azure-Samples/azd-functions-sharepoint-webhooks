@@ -50,25 +50,24 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         const sp = getSPFI(sharePointSite);
 
         // Get all changes since some minutes ago
-        const minutesFromNow: number = CommonConfig.WebhookChangesMinutesAgo;
         const webhookListId = body.value[0].resource;
+        const minutesFromNow: number = CommonConfig.WebhookChangesMinutesAgo;
         const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
         const changeTokenStart = `1;3;${webhookListId};${changeStartTicks};-1`;
         const changeQuery: IChangeQuery = {
             ChangeTokenStart: { StringValue: changeTokenStart },
-            // ChangeTokenStart: undefined,
             ChangeTokenEnd: undefined,
+            Item: true,
             Add: true,
             DeleteObject: true,
+            Update: true,
             Rename: true,
             Restore: true,
-            Item: true,
-            Update: true,
         };
         const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
-        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Added)?.length || 0;
-        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Updated)?.length || 0;
-        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Deleted)?.length || 0;
+        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Add)?.length || 0;
+        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Update)?.length || 0;
+        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Delete)?.length || 0;
         const message = logMessage(context, `${changes.length} change(s) found in list '${webhookListId}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`);
 
         // Log the webhook notification in the history list

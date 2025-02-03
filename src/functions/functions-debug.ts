@@ -52,25 +52,25 @@ export async function getChanges(request: HttpRequest, context: InvocationContex
 
         const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
         const sp = getSPFI(sharePointSite);
-        // build the changeQuery object to get any change since x minutes ago
-        const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
+        
+        // Get all changes since some minutes ago
         const webhookListId = listId;
+        const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
         const changeTokenStart = `1;3;${webhookListId};${changeStartTicks};-1`;
         const changeQuery: IChangeQuery = {
             ChangeTokenStart: { StringValue: changeTokenStart },
-            // ChangeTokenStart: undefined,
             ChangeTokenEnd: undefined,
+            Item: true,
             Add: true,
             DeleteObject: true,
+            Update: true,
             Rename: true,
             Restore: true,
-            Item: true,
-            Update: true,
         };
         const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
-        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Added)?.length || 0;
-        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Updated)?.length || 0;
-        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Deleted)?.length || 0;
+        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Add)?.length || 0;
+        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Update)?.length || 0;
+        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Delete)?.length || 0;
         const message = logMessage(context, `${changes.length} change(s) found in list '${webhookListId}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`);
         // return { status: 200, body: JSON.stringify(changes, ['ChangeType', 'ItemId']) };
         return { status: 200, jsonBody: message };
