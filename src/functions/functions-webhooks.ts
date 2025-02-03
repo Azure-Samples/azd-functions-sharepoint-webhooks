@@ -1,14 +1,14 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { dateAdd } from "@pnp/core";
+import { IChangeQuery } from "@pnp/sp";
 import "@pnp/sp/items/index.js";
 import "@pnp/sp/lists/index.js";
 import { IListEnsureResult } from "@pnp/sp/lists/types.js";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { CommonConfig, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait } from "../utils/common.js";
+import { CommonConfig, GetChangeTokenTicks, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait, WebhookChangeType } from "../utils/common.js";
 import { logError, logMessage } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
-import { IChangeQuery } from "@pnp/sp";
 
 async function registerWebhook(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
@@ -46,15 +46,14 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         }
 
         const body: ISharePointWeebhookEvent = await request.json() as ISharePointWeebhookEvent;
-
         const sharePointSite = getSharePointSiteInfo();
         const sp = getSPFI(sharePointSite);
 
-        // build the changeQuery object to get any change since 5 minutes ago
-        const now = new Date();
-        const changeStart = ((now.getTime() * 10000 - 5 * 60_000 * 10000) + 621355968000000000)
+        // Get all changes since some minutes ago
+        const minutesFromNow: number = CommonConfig.WebhookChangesMinutesAgo;
         const webhookListId = body.value[0].resource;
-        const changeTokenStart = `1;3;${webhookListId};${changeStart};-1`;
+        const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
+        const changeTokenStart = `1;3;${webhookListId};${changeStartTicks};-1`;
         const changeQuery: IChangeQuery = {
             ChangeTokenStart: { StringValue: changeTokenStart },
             // ChangeTokenStart: undefined,
@@ -64,10 +63,15 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
             Rename: true,
             Restore: true,
             Item: true,
+            Update: true,
         };
         const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
-        const message = logMessage(context, `${changes.length} change(s) happened on the list '${body.value[0].resource}' in the last 5 minutes.`);
+        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Added)?.length || 0;
+        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Updated)?.length || 0;
+        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Deleted)?.length || 0;
+        const message = logMessage(context, `${changes.length} change(s) found in list '${webhookListId}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`);
 
+        // Log the webhook notification in the history list
         let webhookHistoryListEnsureResult: IListEnsureResult, error: any;
         [webhookHistoryListEnsureResult, error] = await safeWait(sp.web.lists.ensure(CommonConfig.WebhookHistoryListTitle));
         if (error) {
@@ -79,7 +83,7 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         }
         let result: any;
         [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
-            Title: JSON.stringify(message),
+            Title: message.message,
         }));
         if (error) {
             const errorDetails = await logError(context, error, `Could not add an item to the list '${CommonConfig.WebhookHistoryListTitle}'`);

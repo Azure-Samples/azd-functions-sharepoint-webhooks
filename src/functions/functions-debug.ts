@@ -1,9 +1,8 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { CommonConfig, safeWait } from "../utils/common.js";
-import { logError } from "../utils/loggingHandler.js";
-import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
 import { IChangeQuery } from "@pnp/sp";
-import { dateAdd } from "@pnp/core/util.js";
+import { CommonConfig, GetChangeTokenTicks, safeWait, WebhookChangeType } from "../utils/common.js";
+import { logError, logMessage } from "../utils/loggingHandler.js";
+import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
 
 async function getAccessToken(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const tenantPrefix = request.query.get('tenantPrefix') || CommonConfig.TenantPrefix;
@@ -48,16 +47,15 @@ export async function getChanges(request: HttpRequest, context: InvocationContex
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
         const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const listId = request.query.get('listId');
+        const minutesFromNow: number = Number(request.query.get('minutesFromNow')) || CommonConfig.WebhookChangesMinutesAgo;
         if (!listId) { return { status: 400, body: `Required parameters are missing.` }; }
-
 
         const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
         const sp = getSPFI(sharePointSite);
-        // build the changeQuery object to get any change since 5 minutes ago
-        const now = new Date();
-        const changeStart = ((now.getTime() * 10000 - 5 * 60_000 * 10000) + 621355968000000000)
+        // build the changeQuery object to get any change since x minutes ago
+        const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
         const webhookListId = listId;
-        const changeTokenStart = `1;3;${webhookListId};${changeStart};-1`;
+        const changeTokenStart = `1;3;${webhookListId};${changeStartTicks};-1`;
         const changeQuery: IChangeQuery = {
             ChangeTokenStart: { StringValue: changeTokenStart },
             // ChangeTokenStart: undefined,
@@ -67,9 +65,15 @@ export async function getChanges(request: HttpRequest, context: InvocationContex
             Rename: true,
             Restore: true,
             Item: true,
+            Update: true,
         };
         const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
-        return { status: 200, body: JSON.stringify(changes, ['ChangeType', 'ItemId']) };
+        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Added)?.length || 0;
+        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Updated)?.length || 0;
+        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Deleted)?.length || 0;
+        const message = logMessage(context, `${changes.length} change(s) found in list '${webhookListId}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`);
+        // return { status: 200, body: JSON.stringify(changes, ['ChangeType', 'ItemId']) };
+        return { status: 200, jsonBody: message };
     }
     catch (error: unknown) {
         const errorDetails = await logError(context, error, context.functionName);
