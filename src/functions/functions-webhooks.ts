@@ -1,12 +1,12 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { dateAdd } from "@pnp/core";
-import { IChangeQuery } from "@pnp/sp";
+import { IChangeQuery, SPFI } from "@pnp/sp";
 import "@pnp/sp/items/index.js";
 import "@pnp/sp/lists/index.js";
 import { IListEnsureResult } from "@pnp/sp/lists/types.js";
 import "@pnp/sp/subscriptions/index.js";
 import "@pnp/sp/webs/index.js";
-import { CommonConfig, GetChangeTokenTicks, ISharePointWeebhookEvent, ISubscriptionResponse, safeWait, WebhookChangeType } from "../utils/common.js";
+import { CommonConfig, GetChangeTokenTicks, ISharePointWeebhookEvent, ISharePointWeebhookEventValue, ISubscriptionResponse, safeWait, WebhookChangeType } from "../utils/common.js";
 import { logError, logMessage } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSPFI } from "../utils/spAuthentication.js";
 
@@ -49,26 +49,11 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         const sharePointSite = getSharePointSiteInfo();
         const sp = getSPFI(sharePointSite);
 
-        // Get all changes since some minutes ago
-        const webhookListId = body.value[0].resource;
-        const minutesFromNow: number = CommonConfig.WebhookChangesMinutesAgo;
-        const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
-        const changeTokenStart = `1;3;${webhookListId};${changeStartTicks};-1`;
-        const changeQuery: IChangeQuery = {
-            ChangeTokenStart: { StringValue: changeTokenStart },
-            ChangeTokenEnd: undefined,
-            Item: true,
-            Add: true,
-            DeleteObject: true,
-            Update: true,
-            Rename: true,
-            Restore: true,
-        };
-        const changes: any[] = await sp.web.lists.getById(webhookListId).getChanges(changeQuery);
-        const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Add)?.length || 0;
-        const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Update)?.length || 0;
-        const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Delete)?.length || 0;
-        const message = logMessage(context, `${changes.length} change(s) found in list '${webhookListId}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`);
+        let webhookEventsChanges: Promise<any>[] = [];
+        for (let i: number = 0; i < body.value.length; i++) {
+            webhookEventsChanges.push(getListChanges(context, sp, body.value[i]));
+        }
+        const webhookEventsResult: string[] = await Promise.all(webhookEventsChanges);
 
         // Log the webhook notification in the history list
         let webhookHistoryListEnsureResult: IListEnsureResult, error: any;
@@ -80,14 +65,18 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         if (webhookHistoryListEnsureResult.created === true) {
             logMessage(context, `List '${CommonConfig.WebhookHistoryListTitle}' (to log the webhook notifications) did not exist and was just created.`);
         }
-        let result: any;
-        [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
-            Title: message.message,
-        }));
-        if (error) {
-            const errorDetails = await logError(context, error, `Could not add an item to the list '${CommonConfig.WebhookHistoryListTitle}'`);
-            return { status: errorDetails.httpStatus };
+
+        for (let i: number = 0; i < webhookEventsResult.length; i++) {
+            let result: any;
+            [result, error] = await safeWait(sp.web.lists.getByTitle(CommonConfig.WebhookHistoryListTitle).items.add({
+                Title: webhookEventsResult[i],
+            }));
+            if (error) {
+                const errorDetails = await logError(context, error, `Could not add an item to the list '${CommonConfig.WebhookHistoryListTitle}'`);
+                return { status: errorDetails.httpStatus };
+            }
         }
+        logMessage(context, `Processed the nofification from SharePoint, which contained ${body.value.length} event(s).`);
         return { status: 200 };
     }
     catch (error: unknown) {
@@ -95,6 +84,37 @@ async function wehhookService(request: HttpRequest, context: InvocationContext):
         return { status: errorDetails.httpStatus };
     }
 };
+
+async function getListChanges(context: InvocationContext, sp: SPFI, webhookNotification: ISharePointWeebhookEventValue): Promise<string> {
+    // Get all changes since some minutes ago
+    const listId = webhookNotification.resource;
+    const minutesFromNow: number = CommonConfig.WebhookChangesMinutesAgo;
+    const changeStartTicks = GetChangeTokenTicks(minutesFromNow);
+    const changeTokenStart = `1;3;${listId};${changeStartTicks};-1`;
+    const changeQuery: IChangeQuery = {
+        ChangeTokenStart: { StringValue: changeTokenStart },
+        ChangeTokenEnd: undefined,
+        Item: true,
+        Add: true,
+        DeleteObject: true,
+        Update: true,
+        Rename: true,
+        Restore: true,
+    };
+
+    let changes: any[], error: any;
+    [changes, error] = await safeWait(sp.web.lists.getById(listId).getChanges(changeQuery));
+    if (error) {
+        const errorDetails = await logError(context, error, `Could not get the changes for list '${listId}' in '${webhookNotification.siteUrl}'.`);
+        return errorDetails.message;
+    }
+
+    const numberOfAdds: number = changes.filter(c => c.ChangeType === WebhookChangeType.Add)?.length || 0;
+    const numberOfUpdates: number = changes.filter(c => c.ChangeType === WebhookChangeType.Update)?.length || 0;
+    const numberOfDeletes: number = changes.filter(c => c.ChangeType === WebhookChangeType.Delete)?.length || 0;
+    const message = `${changes.length} change(s) found in list '${listId}' in '${webhookNotification.siteUrl}' since ${minutesFromNow} minutes, including ${numberOfAdds} add(s), ${numberOfUpdates} update(s) and ${numberOfDeletes} delete(s).`;
+    return message;
+}
 
 async function listWehhooks(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
