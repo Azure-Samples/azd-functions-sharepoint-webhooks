@@ -23,6 +23,7 @@ export const safeWait = (promise: Promise<any>) => {
  */
 export const GetChangeTokenTicks = (minutesFromNow: number) => {
     const now = new Date();
+    // Convert JavaScript date to .NET ticks: https://stackoverflow.com/questions/7966559/how-to-convert-javascript-date-object-to-ticks
     return ((now.getTime() * 10_000 + minutesFromNow * 60_000 * 10_000) + 621355968000000000);
 }
 
