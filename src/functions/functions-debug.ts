@@ -3,6 +3,7 @@ import { IChangeQuery } from "@pnp/sp";
 import { CommonConfig, GetChangeTokenTicks, safeWait, WebhookChangeType } from "../utils/common.js";
 import { logError, logMessage } from "../utils/loggingHandler.js";
 import { getSharePointSiteInfo, getSpAccessToken, getSPFI } from "../utils/spAuthentication.js";
+import { getListChanges } from "./functions-webhooks.js";
 
 async function getAccessToken(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     const tenantPrefix = request.query.get('tenantPrefix') || CommonConfig.TenantPrefix;
@@ -42,12 +43,12 @@ export async function getWeb(request: HttpRequest, context: InvocationContext): 
     }
 };
 
-export async function getChanges(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+export async function getListChangesFunc(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
     try {
         const tenantPrefix = request.query.get('tenantPrefix') || undefined;
         const siteRelativePath = request.query.get('siteRelativePath') || undefined;
         const listId = request.query.get('listId');
-        const minutesFromNow: number = Number(request.query.get('minutesFromNow')) || CommonConfig.WebhookChangesMinutesAgo;
+        const minutesFromNow: number = Number(request.query.get('minutesFromNow')) || CommonConfig.MinutesFromNowForChanges;
         if (!listId) { return { status: 400, body: `Required parameters are missing.` }; }
 
         const sharePointSite = getSharePointSiteInfo(tenantPrefix, siteRelativePath);
@@ -83,4 +84,4 @@ export async function getChanges(request: HttpRequest, context: InvocationContex
 
 app.http('debug-getAccessToken', { methods: ['GET'], authLevel: 'admin', handler: getAccessToken, route: 'debug/getAccessToken' });
 app.http('debug-getWeb', { methods: ['GET'], authLevel: 'function', handler: getWeb, route: 'debug/getWeb' });
-app.http('debug-getChanges', { methods: ['GET'], authLevel: 'function', handler: getChanges, route: 'debug/getChanges' });
+app.http('debug-getChanges', { methods: ['GET'], authLevel: 'function', handler: getListChangesFunc, route: 'debug/getChanges' });

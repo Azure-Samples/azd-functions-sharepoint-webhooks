@@ -6,7 +6,7 @@ export const CommonConfig = {
     UserAssignedManagedIdentityClientId: process.env.UserAssignedManagedIdentityClientId || undefined,
     WebhookHistoryListTitle: process.env.WebhookHistoryListTitle || "webhookHistory",
     UserAgent: process.env.UserAgent || "Yvand/azd-functions-sharepoint-webhooks",
-    WebhookChangesMinutesAgo: Number(process.env.WebhookChangesMinutesAgo) || -15,
+    MinutesFromNowForChanges: Number(process.env.MinutesFromNowForChanges) || -15,
 }
 
 // This method awaits on async calls and catches the exception if there is any - https://dev.to/sobiodarlington/better-error-handling-with-async-await-2e5m
