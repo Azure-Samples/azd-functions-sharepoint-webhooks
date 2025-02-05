@@ -53,7 +53,7 @@ The account running `azd` must have at least the following roles to successfully
 1. Run `azd init` from an empty local (root) folder:
 
     ```shell
-    azd init --template Azure-Samples/azd-functions-sharepoint-webhooks
+    azd init --template azd-functions-sharepoint-webhooks
     ```
 
     Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
