@@ -2,8 +2,8 @@
 ---
 name: Azure function app for SharePoint webhooks
 description: This quickstart uses azd CLI to deploy an Azure function app which
-  connects to your SharePoint Online tenant to register, process and manage
-  webhooks.
+  connects to your SharePoint Online tenant, to register and manage webhooks, 
+  and process the notifications from SharePoint.
 page_type: sample
 languages:
   - azdeveloper
@@ -19,13 +19,12 @@ urlFragment: azd-functions-sharepoint-webhooks
 
 # Azure function app for SharePoint webhooks
 
-This template is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses Azure Developer command-line (azd) tools to deploy an Azure function app which connects to your SharePoint Online tenant to register, process and manage [webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks).  
-It uses the [Flex Consumption plan](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan), is written in TypeScript and uses the popular library [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.
+This template uses [Azure Developer CLI (azd)](https://aka.ms/azd) to deploy an Azure function app that connects to your SharePoint Online tenant, to register and manage [webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks), and process the notifications from SharePoint.
 
 ## Overview
 
-Multiple HTTP-triggered functions are created to show, list, register, process and remove webhooks on your SharePoint lists and document libraries.  
-When receiving a notification from SharePoint, the service function adds an item to the list `webhookHistory` (created if it does not exist), and records the event in Application Insights.
+The function app uses the [Flex Consumption plan](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan), hosts multiple HTTP-triggered functions written in TypeScript, and uses [PnPjs](https://pnp.github.io/pnpjs/) to communicate with SharePoint.  
+When receiving a notification from SharePoint, the function gets all the changes for the past 15 minutes on the list that triggered it, and adds an item to the list `webhookHistory` (created if it does not exist).
 
 ## Security of the Azure resources
 
@@ -54,7 +53,7 @@ The account running `azd` must have at least the following roles to successfully
 1. Run `azd init` from an empty local (root) folder:
 
     ```shell
-    azd init --template Yvand/azd-functions-sharepoint-webhooks
+    azd init --template azd-functions-sharepoint-webhooks
     ```
 
     Supply an environment name, such as `spofuncs-quickstart` when prompted. In `azd`, the environment is used to maintain a unique deployment context for your app.
@@ -74,7 +73,7 @@ The account running `azd` must have at least the following roles to successfully
    }
    ```
 
-1. Review the file `infra/main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
+1. Review the file `infra/main.parameters.json` to customize the parameters used for provisioning the resources in Azure. Review [this article](https://learn.microsoft.com/azure/developer/azure-developer-cli/manage-environment-variables) to manage the azd's environment variables.
 
    Important: Ensure the values for `TenantPrefix` and `SiteRelativePath` are identical between the files `local.settings.json` (used when running the function app locally) and `infra\main.parameters.json` (used to set the environment variables in Azure).
 
@@ -100,7 +99,7 @@ If you never heard about `DefaultAzureCredential`, you should familirize yoursel
 ### When it runs on your local environment
 
 `DefaultAzureCredential` will preferentially use the delegated credentials of `Azure CLI` to authenticate to SharePoint.  
-Use the [Microsoft Graph PowerShell](https://learn.microsoft.com/en-us/powershell/microsoftgraph/) script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
+Use the [Microsoft Graph PowerShell](https://learn.microsoft.com/powershell/microsoftgraph/) script below to grant the SharePoint delegated permission `AllSites.Manage` to the `Azure CLI`'s service principal:
 
 ```powershell
 Connect-MgGraph -Scope "Application.Read.All", "DelegatedPermissionGrant.ReadWrite.All"
@@ -314,7 +313,7 @@ traces
 
 ## Known issues
 
-The Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/en-us/azure/azure-functions/flex-consumption-plan#considerations).
+The Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations).
 
 ## Cleanup the resources in Azure
 
