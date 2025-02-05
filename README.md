@@ -2,8 +2,8 @@
 ---
 name: Azure function app for SharePoint webhooks
 description: This quickstart uses azd CLI to deploy an Azure function app which
-  connects to your SharePoint Online tenant to register, process and manage
-  webhooks.
+  connects to your SharePoint Online tenant, to register and manage webhooks, 
+  and process the notifications from SharePoint.
 page_type: sample
 languages:
   - azdeveloper
@@ -19,7 +19,7 @@ urlFragment: azd-functions-sharepoint-webhooks
 
 # Azure function app for SharePoint webhooks
 
-This template is based on [this repository](https://github.com/Azure-Samples/functions-quickstart-typescript-azd). It uses [Azure Developer CLI (azd)](https://aka.ms/azd) to deploy an Azure function app that connects to your SharePoint Online tenant to register and manage [webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks), and process the notifications from SharePoint.
+This template uses [Azure Developer CLI (azd)](https://aka.ms/azd) to deploy an Azure function app that connects to your SharePoint Online tenant, to register and manage [webhooks](https://learn.microsoft.com/sharepoint/dev/apis/webhooks/overview-sharepoint-webhooks), and process the notifications from SharePoint.
 
 ## Overview
 
