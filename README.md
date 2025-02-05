@@ -12,7 +12,7 @@ languages:
   - typescript
 products:
   - azure-functions
-  - sharepoint
+  - office-sp
 urlFragment: azd-functions-sharepoint-webhooks
 ---
 -->
