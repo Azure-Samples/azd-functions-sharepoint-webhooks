@@ -135,11 +135,11 @@ Navigate to your function app in [the Azure portal](https://portal.azure.com/#bl
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
 Then, use one of the scripts below to grant this identity the app-only permission `Sites.Selected` on the SharePoint API:
 
+> [!IMPORTANT]
+> The scripts below require at least the delegated permission [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) (requires admin consent)
+
 <details>
   <summary>Using the Microsoft Graph PowerShell SDK</summary>
-
-  > [!IMPORTANT]  
-> This script requires the scope [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) (requires admin consent)
 
 ```powershell
 # This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with the cmdlet Install-Module below:
@@ -162,9 +162,6 @@ New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $managedIdentityObje
    
 <details>
   <summary>Using az cli in Bash</summary>
-
-> [!IMPORTANT]  
-> The app registration used to run this script must have at least the delegated permission [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) (requires admin consent)
 
 ```bash
 managedIdentityObjectId="d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
