@@ -138,6 +138,9 @@ Then, use one of the scripts below to grant this identity the app-only permissio
 <details>
   <summary>Using the Microsoft Graph PowerShell SDK</summary>
 
+  > [!IMPORTANT]  
+> This script requires the scope [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) (requires admin consent)
+
 ```powershell
 # This script requires the modules Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns, which can be installed with the cmdlet Install-Module below:
 # Install-Module Microsoft.Graph.Authentication, Microsoft.Graph.Applications, Microsoft.Graph.Identity.SignIns -Scope CurrentUser -Repository PSGallery -Force
@@ -160,6 +163,9 @@ New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $managedIdentityObje
 <details>
   <summary>Using az cli in Bash</summary>
 
+> [!IMPORTANT]  
+> The app registration used to run this script must have at least the delegated permission [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) (requires admin consent)
+
 ```bash
 managedIdentityObjectId="d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8" # 'Object (principal) ID' of the managed identity
 resourceServicePrincipalId=$(az ad sp list --query '[].[id]' --filter "displayName eq 'Office 365 SharePoint Online'" -o tsv)
@@ -170,17 +176,14 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 
 </details>
 
-> [!WARNING]
-> The scope [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) is necessary to run the script, and requires the admin consent.
-
 #### Grant the managed identity effective access to a SharePoint site
 
-Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
+Navigate to the [Enterprise applications](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
 Then, use one of the scripts below to grant it the app-only permission `manage` (minimum required to register a webhook) on a specific SharePoint site:
 
 > [!IMPORTANT]  
-> The app registration used to run those commands must have at least the following permissions:
+> The app registration used to run those scripts must have at least the following permissions:
 > - Delegated permission `Application.ReadWrite.All` in the Graph API (requires admin consent)
 > - Delegated permission `AllSites.FullControl` in the SharePoint API (requires admin consent)
 
