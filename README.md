@@ -177,14 +177,12 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 
 Navigate to the [Enterprise applications in the Entra ID portal](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/) > Set the filter `Application type` to `Managed Identities` > Click on your managed identity and note its `Application ID`.  
 In this tutorial, it is `3150363e-afbe-421f-9785-9d5404c5ae34`.  
+Then, use one of the scripts below to grant it the app-only permission `manage` (minimum required to register a webhook) on a specific SharePoint site:
 
-> [!WARNING]  
-> In this step, we will use the `Application ID` of the managed identity, while in the previous step we used its `Object ID`, be mindful about the risk of confusion.
-
-Then, use one of the scripts below to grant it the app-only permission `manage` on a specific SharePoint site:
-
-> [!NOTE]  
-> The managed identity of the function app service is granted SharePoint permission `manage`, because it is the minimum required to register a webhook.
+> [!IMPORTANT]  
+> The app registration used to run those commands must have at least the following permissions:
+> - Delegated permission `Application.ReadWrite.All` in the Graph API (requires admin consent)
+> - Delegated permission `AllSites.FullControl` in the SharePoint API (requires admin consent)
 
 <details>
   <summary>Using PnP PowerShell</summary>
@@ -210,11 +208,6 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 ```
 
 </details>
-
-> [!IMPORTANT]  
-> The app registration used to run those commands must have at least the following permissions:
-> - Delegated permission `Application.ReadWrite.All` in the Graph API
-> - Delegated permission `AllSites.FullControl` in the SharePoint API
 
 ## Call the function app
 
