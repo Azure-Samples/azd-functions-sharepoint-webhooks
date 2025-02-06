@@ -117,7 +117,8 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 ```
 
 > [!WARNING]  
-> The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
+> - The service principal for `Azure CLI` may not exist in your tenant. If so, check [this issue](https://github.com/Azure/azure-cli/issues/28628) to add it.
+> - The scope [`DelegatedPermissionGrant.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) is necessary to run the script, and requires the admin consent.
 
 > [!NOTE]  
 > `AllSites.Manage` is the minimum permission required to register a webhook.
@@ -168,6 +169,9 @@ az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/
 ```
 
 </details>
+
+> [!WARNING]
+> The scope [`AppRoleAssignment.ReadWrite.All`](https://learn.microsoft.com/graph/permissions-reference#approleassignmentreadwriteall) is necessary to run the script, and requires the admin consent.
 
 #### Grant the managed identity effective access to a SharePoint site
 
