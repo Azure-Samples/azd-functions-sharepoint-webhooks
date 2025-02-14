@@ -40,6 +40,7 @@ The resources are deployed in Azure with a high level of security:
 + [Node.js 20](https://www.nodejs.org/)
 + [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?pivots=programming-language-typescript#install-the-azure-functions-core-tools)
 + [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
++ An Azure subscription trusting the same Entra ID directory as your SharePoint tenant
 
 ## Permissions required to provision the resources in Azure
 
@@ -211,21 +212,28 @@ m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl
 
 ## Call the function app
 
-For security reasons, when running in Azure, function app requires an app key to pass in query string parameter `code`. The app keys can be found in the function app service > App Keys.  
+For security reasons, when running in Azure, the function app requires an app key to pass in query string parameter `code`. The app keys can be found in the function app service > App Keys.  
 Most of the HTTP functions take optional parameters `tenantPrefix` and `siteRelativePath`. If they are not specified, the values set in the app's environment variables will be used.
 
-### Using API debugger Bruno
+<details>
+  <summary>Using API debugger Bruno</summary>
 
 Review [this README](http-requests-collection/README.md) for more information.
 
-### Using vscode extension RestClient
+</details>
+
+<details>
+  <summary>Using vscode extension RestClient</summary>
 
 You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http file.  
 It takes parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
 
-### Using Powershell
+</details>
 
-Below is a sample script in Powershell that calls the function app using `Invoke-RestMethod`:
+<details>
+  <summary>Using Powershell</summary>
+
+Below is a sample script in PowerShell that calls the function app using `Invoke-RestMethod`:
 
 ```powershell
 # Format of the values if calling the remote Azure function app
@@ -250,11 +258,62 @@ Invoke-RestMethod -Method POST -Uri "${funchost}/api/webhooks/register?${code}li
 Invoke-RestMethod -Method GET -Uri "${funchost}/api/webhooks/show?${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# Step 1: Get the webhook id in the output of the function /webhooks/show
+# Step 1: Call the function /webhooks/show to get the webhook id
 $webhookId = $(Invoke-RestMethod -Method GET -Uri "${funchost}/api/webhooks/show?${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}").Id
-# Step 2: Call function /webhooks/remove and pass the webhookId
+# Step 2: Call the function /webhooks/remove and pass the webhook id
 Invoke-RestMethod -Method POST -Uri "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webhookId=${webhookId}"
 ```
+
+</details>
+
+<details>
+  <summary>Using curl</summary>
+
+Below is a sample script in Bash that calls the function app using `curl`:
+
+```bash
+# Format of the values if calling the remote Azure function app
+funchost="https://<YOUR_FUNC_APP_NAME>.azurewebsites.net"
+code="code=<YOUR_HOST_KEY>&"
+
+# Format of the values if calling the local function app (for debugging)
+funchost="http://localhost:7071"
+code=""
+
+# Other variables
+listTitle="<YOUR_SHAREPOINT_LIST_NAME>"
+notificationUrl="https://<YOUR_FUNC_APP_NAME>.azurewebsites.net/api/webhooks/service?code=<YOUR_HOST_KEY>"
+
+# List all the webhooks registered on a list
+curl "${funchost}/api/webhooks/list?${code}listTitle=${listTitle}"
+
+# Register a webhook in a list
+curl -X POST "${funchost}/api/webhooks/register?${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+
+# Show this webhook registered on a list
+curl "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
+
+# Remove the webhook from the list
+# Step 1: Call the function /webhooks/show to get the webhook id
+webhookId=$(curl -s "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
+    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
+# Step 2: Call the function /webhooks/remove and pass the webhook id
+curl -X POST "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webhookId=${webhookId}"
+```
+
+</details>
+
+
+<!-- ### Using vscode extension RestClient
+
+You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http file.  
+It takes parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
+
+### Using Powershell
+
+Below is a sample script in PowerShell that calls the function app using `Invoke-RestMethod`:
+
+
 
 ### Using curl
 
@@ -283,12 +342,12 @@ curl -X POST "${funchost}/api/webhooks/register?${code}listTitle=${listTitle}&no
 curl "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
 
 # Remove the webhook from the list
-# Step 1: Get the webhook id in the output of the function /webhooks/show
+# Step 1: Call the function /webhooks/show to get the webhook id
 webhookId=$(curl -s "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
     python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
-# Step 2: Call function /webhooks/remove and pass the webhookId
+# Step 2: Call the function /webhooks/remove and pass the webhook id
 curl -X POST "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webhookId=${webhookId}"
-```
+``` -->
 
 ## Review the logs
 
