@@ -231,7 +231,7 @@ It takes parameters from a .env file on the same folder. You can create it based
 </details>
 
 <details>
-  <summary>Using Powershell</summary>
+  <summary>Using PowerShell</summary>
 
 Below is a sample script in PowerShell that calls the function app using `Invoke-RestMethod`:
 
