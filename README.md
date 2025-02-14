@@ -236,11 +236,11 @@ It takes parameters from a .env file on the same folder. You can create it based
 Below is a sample script in PowerShell that calls the function app using `Invoke-RestMethod`:
 
 ```powershell
-# Format of the values if calling the remote Azure function app
+# Format of the values if calling the function app in Azure
 $funchost = "https://<YOUR_FUNC_APP_NAME>.azurewebsites.net"
 $code = "code=<YOUR_HOST_KEY>&"
 
-# Format of the values if calling the local function app (for debugging)
+# Format of the values if calling the function app locally (for debugging)
 $funchost = "http://localhost:7071"
 $code = ""
 
@@ -272,11 +272,11 @@ Invoke-RestMethod -Method POST -Uri "${funchost}/api/webhooks/remove?${code}list
 Below is a sample script in Bash that calls the function app using `curl`:
 
 ```bash
-# Format of the values if calling the remote Azure function app
+# Format of the values if calling the function app in Azure
 funchost="https://<YOUR_FUNC_APP_NAME>.azurewebsites.net"
 code="code=<YOUR_HOST_KEY>&"
 
-# Format of the values if calling the local function app (for debugging)
+# Format of the values if calling the function app locally (for debugging)
 funchost="http://localhost:7071"
 code=""
 
@@ -303,52 +303,6 @@ curl -X POST "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webh
 
 </details>
 
-
-<!-- ### Using vscode extension RestClient
-
-You can use the Visual Studio Code extension [`REST Client`](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) to execute the requests in the .http file.  
-It takes parameters from a .env file on the same folder. You can create it based on the sample files `azure.env.example` and `local.env.example`.
-
-### Using Powershell
-
-Below is a sample script in PowerShell that calls the function app using `Invoke-RestMethod`:
-
-
-
-### Using curl
-
-Below is a sample script in Bash that calls the function app using `curl`:
-
-```bash
-# Format of the values if calling the remote Azure function app
-funchost="https://<YOUR_FUNC_APP_NAME>.azurewebsites.net"
-code="code=<YOUR_HOST_KEY>&"
-
-# Format of the values if calling the local function app (for debugging)
-funchost="http://localhost:7071"
-code=""
-
-# Other variables
-listTitle="<YOUR_SHAREPOINT_LIST_NAME>"
-notificationUrl="https://<YOUR_FUNC_APP_NAME>.azurewebsites.net/api/webhooks/service?code=<YOUR_HOST_KEY>"
-
-# List all the webhooks registered on a list
-curl "${funchost}/api/webhooks/list?${code}listTitle=${listTitle}"
-
-# Register a webhook in a list
-curl -X POST "${funchost}/api/webhooks/register?${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
-
-# Show this webhook registered on a list
-curl "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}"
-
-# Remove the webhook from the list
-# Step 1: Call the function /webhooks/show to get the webhook id
-webhookId=$(curl -s "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
-    python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
-# Step 2: Call the function /webhooks/remove and pass the webhook id
-curl -X POST "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webhookId=${webhookId}"
-``` -->
-
 ## Review the logs
 
 When the function app runs in your local environment, the logging goes to the console.  
@@ -369,7 +323,7 @@ The KQL query below does the following:
 
 - Includes only the entries from the function `webhooks/service` (which receives the notifications from SharePoint)
 - Parses the `message` as a json document (which is how this project writes the messages)
-- Includes only the entries that were successfully parsed (excludes those from the infrastructure)
+- Includes only the entries that were successfully parsed (that excludes logs from the infrastructure)
 
 ```kql
 traces 
