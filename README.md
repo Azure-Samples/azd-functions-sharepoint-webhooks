@@ -46,8 +46,8 @@ The resources are deployed in Azure with a high level of security:
 
 The account running **azd** must have at least the following roles to successfully provision the resources:
 
-- Azure role [`Contributor`](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor): To create all the resources needed
-- Azure role [`Role Based Access Control Administrator`](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator): To assign roles (to access the storage account and Application Insights) to the managed identity of the function app
+- Azure role [**Contributor**](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#contributor): To create all the resources needed
+- Azure role [**Role Based Access Control Administrator**](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles/privileged#role-based-access-control-administrator): To assign roles (to access the storage account and Application Insights) to the managed identity of the function app
 
 ## Initialize the project
 
