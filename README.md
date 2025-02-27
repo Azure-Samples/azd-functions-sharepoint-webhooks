@@ -38,9 +38,9 @@ The resources are deployed in Azure with a high level of security:
 ## Prerequisites
 
 - [Node.js 20](https://www.nodejs.org/)
-- [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?pivots=programming-language-typescript#install-the-azure-functions-core-tools)
+- [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
-- An Azure subscription trusting the same Entra ID directory as your SharePoint tenant
+- An Azure subscription that trusts the same Microsoft Entra ID directory as the SharePoint tenant
 
 ## Permissions required to provision the resources in Azure
 
@@ -53,7 +53,7 @@ The account running `azd` must have at least the following roles to successfully
 
 1. Run `azd init` from an empty local (root) folder:
 
-    ```shell
+    ```console
     azd init --template azd-functions-sharepoint-webhooks
     ```
 
@@ -80,7 +80,7 @@ The account running `azd` must have at least the following roles to successfully
 
 1. Install the dependencies and build the function app:
 
-   ```shell
+   ```console
    npm install
    npm run build
    ```
@@ -96,7 +96,7 @@ It can run either locally or in Azure:
 
 The authentication to SharePoint is done using `DefaultAzureCredential`, so the credential used depends if the function app runs locally, or in Azure.  
 
-If you never heard about `DefaultAzureCredential`, you should familiarize yourself with its concept by reading [this article](https://aka.ms/azsdk/js/identity/credential-chains#use-defaultazurecredential-for-flexibility).
+If you never heard about `DefaultAzureCredential`, you should familiarize yourself with its concept by referring to the section **Use DefaultAzureCredential for flexibility** in [Credential chains in the Azure Identity client library for JavaScript](https://learn.microsoft.com/azure/developer/javascript/sdk/authentication/credential-chains).
 
 ### When it runs on your local environment
 
@@ -131,11 +131,11 @@ New-MgOauth2PermissionGrant -BodyParameter $params
 
 `DefaultAzureCredential` will use a managed identity to authenticate to SharePoint. This may be the existing, system-assigned managed identity of the function app service or a user-assigned managed identity.  
 
-This tutorial will assume that the system-assigned managed identity is used.
+This tutorial assumes the system-assigned managed identity is used.
 
 #### Grant the SharePoint API permission Sites.Selected to the managed identity
 
-Navigate to your function app in [the Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
+Navigate to your function app in the [Azure portal](https://portal.azure.com/#blade/HubsExtension/BrowseResourceBlade/resourceType/Microsoft.Web%2Fsites/kind/functionapp) > click `Identity` and note the `Object (principal) ID` of the system-assigned managed identity.  
 
 In this tutorial, it is `d3e8dc41-94f2-4b0f-82ff-ed03c363f0f8`.  
 
@@ -163,7 +163,6 @@ $appRoleAssignment = @{
 }
 New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $managedIdentityObjectId -BodyParameter $appRoleAssignment | Format-List
 ```
-
 </details>
    
 <details>
@@ -176,7 +175,6 @@ resourceServicePrincipalAppRoleId="$(az ad sp show --id $resourceServicePrincipa
 
 az rest --method POST --uri "https://graph.microsoft.com/v1.0/servicePrincipals/${managedIdentityObjectId}/appRoleAssignments" --headers 'Content-Type=application/json' --body "{ 'principalId': '${managedIdentityObjectId}', 'resourceId': '${resourceServicePrincipalId}', 'appRoleId': '${resourceServicePrincipalAppRoleId}' }"
 ```
-
 </details>
 
 #### Grant the managed identity effective access to a SharePoint site
@@ -202,7 +200,6 @@ Then, use one of the scripts below to grant it the app-only permission `manage` 
 Connect-PnPOnline -Url "https://YOUR_SHAREPOINT_TENANT_PREFIX.sharepoint.com/sites/YOUR_SHAREPOINT_SITE_NAME" -Interactive -ClientId "YOUR_PNP_APP_CLIENT_ID"
 Grant-PnPAzureADAppSitePermission -AppId "3150363e-afbe-421f-9785-9d5404c5ae34" -DisplayName "YOUR_FUNC_APP_NAME" -Permissions Manage
 ```
-
 </details>
    
 <details>
@@ -215,7 +212,6 @@ targetapp="3150363e-afbe-421f-9785-9d5404c5ae34"
 siteUrl="https://YOUR_SHAREPOINT_TENANT_PREFIX.sharepoint.com/sites/YOUR_SHAREPOINT_SITE_NAME"
 m365 spo site apppermission add --appId $targetapp --permission manage --siteUrl $siteUrl
 ```
-
 </details>
 
 ## Call the function app
