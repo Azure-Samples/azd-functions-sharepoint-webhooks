@@ -343,7 +343,7 @@ traces
 
 ## Known issues
 
-The Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations).
+The Flex Consumption plan has [limitations](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations) you should be aware of.
 
 ## Cleanup the resources in Azure
 
