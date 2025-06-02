@@ -37,7 +37,7 @@ The resources are deployed in Azure with a high level of security:
 
 ## Prerequisites
 
-+ [Node.js 20](https://www.nodejs.org/)
++ [Node.js 22](https://www.nodejs.org/)
 + [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local?pivots=programming-language-typescript#install-the-azure-functions-core-tools)
 + [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
 
