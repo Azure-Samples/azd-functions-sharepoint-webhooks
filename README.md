@@ -37,7 +37,7 @@ The resources are deployed in Azure with a high level of security:
 
 ## Prerequisites
 
-- [Node.js 20](https://www.nodejs.org/)
++ [Node.js 22](https://www.nodejs.org/)
 - [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
 - An Azure subscription that trusts the same Microsoft Entra ID directory as the SharePoint tenant
@@ -343,7 +343,7 @@ traces
 
 ## Known issues
 
-The Flex Consumption plan is currently in preview, be aware about its [current limitations and issues](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations).
+The Flex Consumption plan has [limitations](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations) you should be aware of.
 
 ## Cleanup the resources in Azure
 

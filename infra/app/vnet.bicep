@@ -12,93 +12,37 @@ param appSubnetName string = 'app'
 
 param tags object = {}
 
-resource nsg_subnet_pe 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
-  name: 'nsg-${peSubnetName}'
-  location: location
-  properties: {
-    securityRules: null
-  }
-}
-
-resource nsg_subnet_app 'Microsoft.Network/networkSecurityGroups@2023-11-01' = {
-  name: 'nsg-${appSubnetName}'
-  location: location
-  properties: {
-    securityRules: null
-  }
-}
-
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-11-01' = {
-  name: vNetName
-  location: location
-  tags: tags
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-      ]
-    }
-    encryption: {
-      enabled: false
-      enforcement: 'AllowUnencrypted'
-    }
+// Migrated to use AVM module instead of direct resource declaration
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.6.1' = {
+  name: 'vnet-deployment'
+  params: {
+    // Required parameters
+    name: vNetName
+    addressPrefixes: [
+      '10.0.0.0/16'
+    ]
+    // Non-required parameters
+    location: location
+    tags: tags
     subnets: [
       {
         name: peSubnetName
-        properties: {
-          addressPrefixes: [
-            '10.0.1.0/28' // allows for 11 usable IP addresses
-          ]
-          delegations: []
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-          networkSecurityGroup: {
-            id: nsg_subnet_pe.id
-          }
-        }
+        addressPrefix: '10.0.1.0/24'
+        privateEndpointNetworkPolicies: 'Disabled'
+        privateLinkServiceNetworkPolicies: 'Enabled'
       }
       {
         name: appSubnetName
-        properties: {
-          addressPrefixes: [
-            '10.0.2.0/26' // allows for 59 usable IP addresses
-          ]
-          serviceEndpoints: [
-            {
-              service: 'Microsoft.Storage'
-            }
-            {
-              service: 'Microsoft.KeyVault'
-            }
-          ]
-          delegations: [
-            {
-              name: 'delegation'
-              id: resourceId('Microsoft.Network/virtualNetworks/subnets/delegations', vNetName, 'app', 'delegation')
-              properties: {
-                //Microsoft.App/environments is the correct delegation for Flex Consumption VNet integration
-                serviceName: 'Microsoft.App/environments'
-              }
-            }
-          ]
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-          networkSecurityGroup: {
-            id: nsg_subnet_app.id
-          }
-        }
+        addressPrefix: '10.0.2.0/24'
+        privateEndpointNetworkPolicies: 'Disabled'
+        privateLinkServiceNetworkPolicies: 'Enabled'
+        delegation: 'Microsoft.App/environments'
       }
     ]
-    virtualNetworkPeerings: []
-    enableDdosProtection: false
-  }
-
-  resource appSubnet 'subnets' existing = {
-    name: appSubnetName
   }
 }
 
-output peSubnetName string = virtualNetwork.properties.subnets[0].name
-output peSubnetID string = virtualNetwork.properties.subnets[0].id
-output appSubnetName string = virtualNetwork.properties.subnets[1].name
-output appSubnetID string = virtualNetwork::appSubnet.id
+output peSubnetName string = peSubnetName
+output peSubnetID string = '${virtualNetwork.outputs.resourceId}/subnets/${peSubnetName}'
+output appSubnetName string = appSubnetName
+output appSubnetID string = '${virtualNetwork.outputs.resourceId}/subnets/${appSubnetName}'
