@@ -30,6 +30,7 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.6.1' = {
         addressPrefix: '10.0.1.0/24'
         privateEndpointNetworkPolicies: 'Disabled'
         privateLinkServiceNetworkPolicies: 'Enabled'
+        defaultOutboundAccess: false
       }
       {
         name: appSubnetName
@@ -37,6 +38,9 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.6.1' = {
         privateEndpointNetworkPolicies: 'Disabled'
         privateLinkServiceNetworkPolicies: 'Enabled'
         delegation: 'Microsoft.App/environments'
+        // If defaultOutboundAccess is set to false on this subnet and the function app's managed identity is SystemAssigned, deploying the app package fails with this error:
+        // InaccessibleStorageException: Failed to access storage account for deployment: BlobUploadFailedException: Failed to upload blob to storage account: Response status code does not indicate success: 404
+        // defaultOutboundAccess: false
       }
     ]
   }
