@@ -302,7 +302,7 @@ curl "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificat
 
 # Remove the webhook from the list
 # Step 1: Call the function /webhooks/show to get the webhook id
-webhookId=$(curl -s "${funchost}/api/webhooks/show?code=${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
+webhookId=$(curl -s "${funchost}/api/webhooks/show?${code}listTitle=${listTitle}&notificationUrl=${notificationUrl}" | \
     python3 -c "import sys, json; document = json.load(sys.stdin); document and print(document['id'])")
 # Step 2: Call the function /webhooks/remove and pass the webhook id
 curl -X POST "${funchost}/api/webhooks/remove?${code}listTitle=${listTitle}&webhookId=${webhookId}"
