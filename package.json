@@ -22,14 +22,14 @@
   },
   "dependencies": {
     "@azure/functions": "^4.6.1",
-    "@pnp/azidjsclient": "^4.9.0",
-    "@pnp/core": "^4.9.0",
-    "@pnp/nodejs": "^4.9.0"
+    "@pnp/azidjsclient": "^4.15.0",
+    "@pnp/core": "^4.15.0",
+    "@pnp/nodejs": "^4.15.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
-    "azure-functions-core-tools": "^4.0.6821",
+    "azure-functions-core-tools": "^4.1.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.2"
   }
 }
