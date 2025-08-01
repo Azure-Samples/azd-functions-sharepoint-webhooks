@@ -37,7 +37,7 @@ The resources are deployed in Azure with a high level of security:
 
 ## Prerequisites
 
-+ [Node.js 22](https://www.nodejs.org/)
+- [Node.js 22](https://www.nodejs.org/)
 - [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
 - [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
 - An Azure subscription that trusts the same Microsoft Entra ID directory as the SharePoint tenant
@@ -343,7 +343,16 @@ traces
 
 ## Known issues
 
-The Flex Consumption plan has [limitations](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations) you should be aware of.
+- Deploying the app package to the function app in Azure (using `azd up` or `azd deploy`) may fail with this error:
+
+```
+ERROR: error executing step command 'deploy --all': failed deploying service 'api': publishing zip file: deployment failed:
+/opt/Kudu/Scripts/starter.sh oryx build /tmp/zipdeploy/extracted -o /home/site/wwwroot --platform nodejs --platform-version 22 More information:
+```
+
+If so, it may be deployed using **[func cli](https://learn.microsoft.com/azure/azure-functions/functions-run-local)** instead: `func azure functionapp publish YOUR_FUNC_APP_NAME`
+
+- The Flex Consumption plan has [limitations](https://learn.microsoft.com/azure/azure-functions/flex-consumption-plan#considerations) you should be aware of.
 
 ## Cleanup the resources in Azure
 
