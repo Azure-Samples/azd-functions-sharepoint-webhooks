@@ -1,6 +1,6 @@
 {
   "name": "azd-functions-sharepoint-webhooks",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": {
     "name": "Yvan Duhamel"
   },
@@ -21,14 +21,14 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@azure/functions": "^4.6.1",
-    "@pnp/azidjsclient": "^4.15.0",
-    "@pnp/core": "^4.15.0",
-    "@pnp/nodejs": "^4.15.0"
+    "@azure/functions": "^4.8.0",
+    "@pnp/azidjsclient": "^4.16.0",
+    "@pnp/core": "^4.16.0",
+    "@pnp/nodejs": "^4.16.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
-    "azure-functions-core-tools": "^4.1.0",
+    "azure-functions-core-tools": "^4.2.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.2"
   }
