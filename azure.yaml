@@ -2,7 +2,7 @@
 
 name: azd-functions-sharepoint-webhooks
 metadata:
-  template: Yvand/azd-functions-sharepoint-webhooks@1.2.1
+  template: Yvand/azd-functions-sharepoint-webhooks@1.2.2
 services:
   api:
     project: .
