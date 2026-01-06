@@ -27,7 +27,7 @@
     "@pnp/nodejs": "^4.17.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
+    "@types/node": "^22.10.7",
     "azure-functions-core-tools": "^4.6.0",
     "rimraf": "^6.1.2",
     "typescript": "^5.9.3"
