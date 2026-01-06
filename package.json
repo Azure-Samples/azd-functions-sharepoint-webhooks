@@ -21,15 +21,15 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@azure/functions": "^4.8.0",
-    "@pnp/azidjsclient": "^4.16.0",
-    "@pnp/core": "^4.16.0",
-    "@pnp/nodejs": "^4.16.0"
+    "@azure/functions": "^4.10.0",
+    "@pnp/azidjsclient": "^4.17.0",
+    "@pnp/core": "^4.17.0",
+    "@pnp/nodejs": "^4.17.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
-    "azure-functions-core-tools": "^4.2.2",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.9.2"
+    "@types/node": "^25.0.3",
+    "azure-functions-core-tools": "^4.6.0",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.9.3"
   }
 }
