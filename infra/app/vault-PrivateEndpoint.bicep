@@ -14,11 +14,11 @@ param location string = resourceGroup().location
 param tags object = {}
 
 // Virtual Network
-resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' existing = {
+resource vnet 'Microsoft.Network/virtualNetworks@2025-01-01' existing = {
   name: virtualNetworkName
 }
 
-resource keyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+resource keyVaultResource 'Microsoft.KeyVault/vaults@2025-05-01' existing = {
   name: resourceName
 }
 
@@ -26,7 +26,7 @@ resource keyVaultResource 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 var vaultPrivateDNSZoneName = 'privatelink.vaultcore.azure.net'
 
 // AVM module for vault Private DNS Zone
-module privateDnsZoneVaultDeployment 'br/public:avm/res/network/private-dns-zone:0.7.1' = {
+module privateDnsZoneVaultDeployment 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   name: 'vault-private-dns-zone-deployment'
   params: {
     name: vaultPrivateDNSZoneName
@@ -45,7 +45,7 @@ module privateDnsZoneVaultDeployment 'br/public:avm/res/network/private-dns-zone
 }
 
 // AVM module for Blob Private Endpoint with private DNS zone
-module vaultPrivateEndpoint 'br/public:avm/res/network/private-endpoint:0.11.0' = {
+module vaultPrivateEndpoint 'br/public:avm/res/network/private-endpoint:0.11.1' = {
   name: 'private-endpoint-vault-deployment'
   params: {
     name: 'private-endpoint-vault'
