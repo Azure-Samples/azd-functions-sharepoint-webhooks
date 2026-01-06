@@ -16,7 +16,7 @@ var monitoringRoleDefinitionId = '3913510d-42f4-4e42-8a64-420c390055eb' // Monit
 var keyVaultSecretsUserRoleDefinitionId = '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User role ID
 var keyVaultAdministratorRoleDefinitionId = '00482a5a-887f-4fb3-b363-3b7fe8e74483' // Key Vault Administrator role ID
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' existing = {
   name: storageAccountName
 }
 
@@ -24,7 +24,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: appInsightsName
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (!empty(keyVaultName)) {
+resource keyVault 'Microsoft.KeyVault/vaults@2025-05-01' existing = if (!empty(keyVaultName)) {
   name: keyVaultName
 }
 // Role assignment for Storage Account (Blob) - Managed Identity

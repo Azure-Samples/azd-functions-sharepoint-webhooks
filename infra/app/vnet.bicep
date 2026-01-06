@@ -13,7 +13,7 @@ param appSubnetName string = 'app'
 param tags object = {}
 
 // Migrated to use AVM module instead of direct resource declaration
-module virtualNetwork 'br/public:avm/res/network/virtual-network:0.6.1' = {
+module virtualNetwork 'br/public:avm/res/network/virtual-network:0.7.2' = {
   name: 'vnet-deployment'
   params: {
     // Required parameters

@@ -59,7 +59,7 @@ var allAppSettings = union(
   userManagedIdentityStorageAccountSettings
 )
 
-resource stg 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+resource stg 'Microsoft.Storage/storageAccounts@2025-06-01' existing = {
   name: storageAccountName
 }
 
@@ -68,7 +68,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 // Create a Flex Consumption Function App to host the API
-module api 'br/public:avm/res/web/site:0.16.0' = {
+module api 'br/public:avm/res/web/site:0.20.0' = {
   name: '${serviceName}-flex-consumption'
   params: {
     kind: kind
@@ -112,7 +112,7 @@ module api 'br/public:avm/res/web/site:0.16.0' = {
         ]
       }
     }
-    virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
+    virtualNetworkSubnetResourceId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
 
     configs: [
       {
