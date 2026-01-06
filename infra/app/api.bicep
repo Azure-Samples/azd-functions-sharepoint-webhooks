@@ -19,6 +19,7 @@ param enableBlob bool = true
 param enableQueue bool = false
 param enableTable bool = false
 param enableFile bool = false
+param logAnalyticsWorkspaceResourceId string
 
 @allowed(['SystemAssigned', 'UserAssigned'])
 param identityType string
@@ -121,7 +122,19 @@ module api 'br/public:avm/res/web/site:0.20.0' = {
         // storageAccountResourceId: stg.id
         // storageAccountUseIdentityAuthentication: true
         properties: allAppSettings
-      }      
+      }
+    ]
+
+    diagnosticSettings: [
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        name: 'customSettingwsffcp'
+        workspaceResourceId: logAnalyticsWorkspaceResourceId
+      }
     ]
   }
 }
