@@ -21,7 +21,7 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@azure/functions": "^4.10.0",
+    "@azure/functions": "^4.11.0",
     "@pnp/azidjsclient": "^4.17.0",
     "@pnp/core": "^4.17.0",
     "@pnp/nodejs": "^4.17.0"
