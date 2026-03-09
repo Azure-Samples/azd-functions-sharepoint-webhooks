@@ -10,7 +10,7 @@
   },
   "description": "Uses Azure Developer cli (azd) to deploy an Azure function app that connects to your SharePoint Online tenant, to register and manage webhooks, and process the notifications from SharePoint ",
   "license": "MIT",
-  "main": "dist/src/functions/*.js",
+  "main": "dist/src/{index.js,functions/*.js}",
   "type": "module",
   "scripts": {
     "build": "tsc",
