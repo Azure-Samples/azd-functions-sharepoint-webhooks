@@ -69,7 +69,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 // Create a Flex Consumption Function App to host the API
-module api 'br/public:avm/res/web/site:0.20.0' = {
+module api 'br/public:avm/res/web/site:0.23.1' = {
   name: '${serviceName}-flex-consumption'
   params: {
     kind: kind

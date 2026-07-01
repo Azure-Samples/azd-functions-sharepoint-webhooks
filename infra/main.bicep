@@ -93,7 +93,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
 
 // User assigned managed identity to be used by the function app to reach storage and other dependencies
 // Assign specific roles to this identity in the RBAC module
-module apiUserAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.3' = if (apiServiceIdentityType == 'UserAssigned') {
+module apiUserAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.5.1' = if (apiServiceIdentityType == 'UserAssigned') {
   name: 'apiUserAssignedIdentity'
   scope: rg
   params: {
@@ -106,7 +106,7 @@ module apiUserAssignedIdentity 'br/public:avm/res/managed-identity/user-assigned
 }
 
 // Create an App Service Plan to group applications under the same payment plan and SKU
-module appServicePlan 'br/public:avm/res/web/serverfarm:0.5.0' = {
+module appServicePlan 'br/public:avm/res/web/serverfarm:0.7.0' = {
   name: 'appserviceplan'
   scope: rg
   params: {
@@ -158,7 +158,7 @@ var ipRules = [
 ]
 
 // Backing storage for Azure functions backend API
-module storage 'br/public:avm/res/storage/storage-account:0.31.0' = {
+module storage 'br/public:avm/res/storage/storage-account:0.32.1' = {
   name: 'storage'
   scope: rg
   params: {
@@ -242,7 +242,7 @@ module storagePrivateEndpoint 'app/storage-PrivateEndpoint.bicep' = if (vnetEnab
 }
 
 // Monitor application with Azure Monitor - Log Analytics and Application Insights
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.14.2' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.15.1' = {
   name: '${uniqueString(deployment().name, location)}-loganalytics'
   scope: rg
   params: {
@@ -253,7 +253,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.14.2' = 
   }
 }
 
-module monitoring 'br/public:avm/res/insights/component:0.7.1' = {
+module monitoring 'br/public:avm/res/insights/component:0.7.2' = {
   name: '${uniqueString(deployment().name, location)}-appinsights'
   scope: rg
   params: {
