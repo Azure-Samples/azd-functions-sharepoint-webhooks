@@ -12,6 +12,9 @@
   "license": "MIT",
   "main": "dist/src/{index.js,functions/*.js}",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -21,14 +24,14 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@azure/functions": "^4.10.0",
-    "@pnp/azidjsclient": "^4.17.0",
-    "@pnp/core": "^4.17.0",
-    "@pnp/nodejs": "^4.17.0"
+    "@azure/functions": "^4.16.1",
+    "@pnp/azidjsclient": "^4.20.0",
+    "@pnp/core": "^4.20.0",
+    "@pnp/nodejs": "^4.20.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.7",
-    "azure-functions-core-tools": "^4.6.0",
+    "@types/node": "^24.13.2",
+    "azure-functions-core-tools": "^4.12.1",
     "rimraf": "^6.1.2",
     "typescript": "^5.9.3"
   }
